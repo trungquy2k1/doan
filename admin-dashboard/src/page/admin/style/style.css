@@ -1,0 +1,7 @@
+.adminhead {
+    display: flex;
+    justify-content: space-between;
+    /* margin: 10px; */
+    padding-bottom: 5px;
+    border-bottom: 1px solid grey;
+}

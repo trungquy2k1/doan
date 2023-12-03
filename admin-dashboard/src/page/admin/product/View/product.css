@@ -1,0 +1,137 @@
+.labelview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 942px;
+    height: 40px;
+    border-bottom: 1px solid #000000;
+    border-right: 1px solid grey;
+    /* margin-bottom: 10px; */
+    margin-top: 0px;
+}
+.labelstt {
+    width: 56px;
+    height: 40px;
+    border-right: 1px solid grey;
+    justify-content: center;
+    text-align: center;
+}
+.labelanh {
+    width: 130px;
+    height: 40px;
+    border-right: 1px solid grey;
+    /* /* align-items: center; */
+    justify-content: center;
+    text-align: center;
+}
+.labelten {
+    width: 130px;
+    height: 40px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+}
+.labelloai {
+    width: 90px;
+    height: 40px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+}
+.labelmota {
+    width: 396px;
+    height: 40px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+}
+.labelgia {
+    width: 140px;
+    height: 40px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+}
+.containerview {
+    width: 1021px;
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #000000;
+    border-top: 1px solid #000000;
+}
+.view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 942px;
+    height: 110px;
+    border-bottom: 1px solid #000000;
+    /* border-right: 1px solid grey; */
+    /* margin-bottom: 10px; */
+    margin-top: 0px;
+}
+.stt {
+    width: 56px;
+    height: 110px;
+    border-right: 1px solid grey;
+    /* align-items: center; */
+    justify-content: center;
+    text-align: center;
+}
+.anh {
+    width: 132px;
+    height: 110px;
+    border-right: 1px solid grey;
+    /* align-items: center; */
+    justify-content: center;
+    text-align: center;
+}
+.ten {
+    width: 128px;
+    height: 110px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+}
+.loai {
+    width: 90px;
+    height: 110px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+}
+.mota {
+    width: 396px;
+    height: 110px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    text-align: center;
+
+    /* display: -webkit-box;
+    -webkit-line-clamp: 2; /* Hiển thị tối đa 3 dòng */
+    /* -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; */
+
+    overflow: auto;
+    height: 100px;
+}
+.gia {
+    width: 140px;
+    height: 110px;
+    border-right: 1px solid grey;
+    /* align-items: center;
+    justify-content: center; */
+    /* width: 396px;
+    height: 110px; */
+    text-align: center;
+}

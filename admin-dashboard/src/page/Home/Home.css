@@ -1,0 +1,14 @@
+.Home {
+    display: flex;
+    flex-direction: column;
+    width: 1520px;
+}
+.containerHome {
+    display: flex;
+    flex-direction: row;
+    width: 1520px;
+}
+.rightcontainer {
+    background-color: bisque;
+    width: 1020px;
+}
