@@ -37,7 +37,7 @@ const Giohang = () => {
 
   const navigation = useNavigation();
 
-  const featchData = async () => {
+   const featchData = async () => {
     try {
       const subscriber = firestore()
         .collection('Cart')
@@ -77,7 +77,7 @@ const Giohang = () => {
       Alert.alert('Xóa thành công!');
       // console.log('Deleted product ID:', doc);
       featchData();
-      // console.log('productId: ', doc.data)
+      console.log('productId: ', productId)
     } catch (error) {
       console.error('Error removing document: ', error);
     }
@@ -135,7 +135,7 @@ const Giohang = () => {
               }
               >
               <Image
-                source={require('../Navigation/Category/delete.png')}
+                source={require('../Image/Category/delete1.png')}
                 style={{
                   width: 50,
                   height: 50,

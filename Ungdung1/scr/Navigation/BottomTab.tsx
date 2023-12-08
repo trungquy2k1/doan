@@ -68,7 +68,7 @@ const BottomTabNavigation = () => {
           tabBarLabel: 'Loại',
           tabBarIcon: () => (
             <Image 
-              source={require('./Category/logo.png')}
+              source={require('../Image/Category/logo.png')}
               style={{width: 32, height: 32}}
             />
           ),
@@ -95,7 +95,7 @@ const BottomTabNavigation = () => {
         tabBarLabel: 'Yêu thích',
         tabBarIcon: () => (
           <Image 
-            source={require('./Category/favorie.png')}
+            source={require('../Image/Category/favorie.png')}
               style={{width: 32, height: 32}}
           />
         )
@@ -119,7 +119,7 @@ const BottomTabNavigation = () => {
         tabBarLabel: 'Giỏ hàng',
         tabBarIcon: () => (
           <Image 
-            source={require('./Category/cart.png')}
+            source={require('../Image/Category/cart.png')}
               style={{width: 32, height: 32}}
           />
         )
@@ -143,7 +143,7 @@ const BottomTabNavigation = () => {
         tabBarLabel: 'Hồ sơ',
         tabBarIcon: () => (
           <Image 
-            source={require('./Category/profile.png')}
+            source={require('../Image/Category/profile.png')}
               style={{width: 32, height: 32}}
           />
         )

@@ -44,7 +44,11 @@ const HomeScr = () => {
       .where('giamgia', '!=', '0')
       .get();
 
-    const items = snapshot.docs.map(doc => doc.data());
+    // const items = snapshot.docs.map(doc => doc.data());
+    const items = snapshot.docs.map(doc => ({
+      ...doc.data(),
+      key: doc.id,
+    }));
     setProducts(items);
   };
   const FavoriesData = async () => {
@@ -53,7 +57,11 @@ const HomeScr = () => {
       // .where('category', '==', categoryname)
       .get();
 
-    const items = snapshot.docs.map(doc => doc.data());
+    // const items = snapshot.docs.map(doc => doc.data());
+    const items = snapshot.docs.map(doc => ({
+      ...doc.data(),
+      key: doc.id,
+    }));
     setFavories(items);
   };
 

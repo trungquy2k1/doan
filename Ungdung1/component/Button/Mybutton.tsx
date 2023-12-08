@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent, Image } from 'react-native';
 
 import styles from './style';
+// const MyButton = (props) => {
 const MyButton = (props) => {
+
     // const [isPressed, setIsPressed] = useState(false);
   
     // const handlePress = () => {
@@ -16,10 +18,6 @@ const MyButton = (props) => {
         style = {[props.style, styles.button]}
         onPress={props.onPress}
       >
-        {/* <Image 
-          source={props.image}
-          style={props.styless}
-        /> */}
         <Text style={styles.buttonText}>{props.titlebtn}</Text>
       </TouchableOpacity>
     );

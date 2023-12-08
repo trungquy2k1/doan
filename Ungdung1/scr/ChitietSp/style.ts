@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    marginLeft: 20
+    marginLeft: 20,
   },
   imgcart: {
     width: 30,
@@ -240,11 +240,51 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 50,
     borderColor: '#ffa64d',
-    marginTop: 8
+    marginTop: 8,
   },
   imgtim: {
     width: 30,
     height: 30,
+  },
+  binhluan: {
+    // marginTop: 20,
+    // marginHorizontal: 5,
+    // flexDirection: 'row',
+    height: 463,
+    overflow: 'scroll',
+    // marginBottom: 20
+  },
+  binhluan2: {
+    // marginTop: 20,
+    marginHorizontal: 5,
+    flexDirection: 'row',
+    width: '80%',
+    marginBottom: 10
+    // minHeight: 500
+  },
+  imgavata: {
+    width: 30,
+    height: 30,
+  },
+  noidung: {
+    // marginTop: 20, 
+    marginHorizontal: 5, 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 360
+  },
+  nameanddate: {},
+  name: {
+    fontSize: 17,
+    fontWeight: '400',
+    color: '#000'
+  },
+  content: {
+  borderWidth: 0.2,
+  marginLeft: 5,
+  marginTop: 3,
+  fontSize: 18,
+  color: '#000'
   },
 });
 

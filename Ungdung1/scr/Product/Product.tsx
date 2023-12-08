@@ -211,7 +211,7 @@
 // -----------------------Sử dụng đoạn này-----------------------------------------------------
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -226,8 +226,9 @@ import { DocumentData } from 'firebase/firestore';
 import styles from './style';
 import { useNavigation } from '@react-navigation/native';
 
-
+// import { AppContext } from '../../component/AppContext/AppContext';
 const ProductListScreen = ( {route}: any ) => {
+  // const {productId, setProductId} = useContext(AppContext);
   const {categoryname} = route.params;
   const navigation = useNavigation();
   // const [products, setProducts] = useState([]);
@@ -238,18 +239,100 @@ const ProductListScreen = ( {route}: any ) => {
   const [lastDocId, setLastDocId] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
 
+  // const fetchData = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const snapshot = await firestore()
+  //       .collection('Product')
+  //       .where('category', '==', categoryname)
+  //       .orderBy(firestore.FieldPath.documentId())
+  //       .limit(8)
+  //       .get();
+
+  //     const items = snapshot.docs.map((doc) => doc.data());
+  //     setProducts(items);
+  //     setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
+  //     setHasMore(items.length >= 8);
+  //   } catch (error) {
+  //     console.error('Error fetching products:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const fetchData = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const snapshot = await firestore()
+  //       .collection('Product')
+  //       .where('category', '==', categoryname)
+  //       .orderBy(firestore.FieldPath.documentId())
+  //       .limit(8)
+        
+  //       .onSnapshot(querySnapshot => {
+  //         const product: React.SetStateAction<DocumentData[]> | { key: string; }[] = [];
+
+  //         querySnapshot.forEach(documentSnapshot => {
+  //           product.push({
+  //             ...documentSnapshot.data(),
+  //             key: documentSnapshot.id,
+  //           });
+  //         });
+
+  //         setProducts(product);
+  //         setLoading(false);
+  //       });
+  //       // console.log('product: ', JSON.stringify(products, null, 3))
+
+  //       // console.log('product: ', products)
+  //       // products.map((product, index)=>console.log('Product: ', product.key))
+  //     // const items = snapshot.docs.map((doc) => doc.data());
+  //     // setProducts(items);
+  //     // setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
+  //     // setHasMore(items.length >= 8);
+  //     if (querySnapshot.docs.length > 0) {
+  //       const items = querySnapshot.docs.map((doc) => doc.data());
+  //       setProducts(items);
+  //       setLastDocId(querySnapshot.docs[querySnapshot.docs.length - 1].id);
+  //       setHasMore(items.length >= 8);
+  //     }
+
+
+  //       return () => snapshot();
+  //     //   
+  //     //   .orderBy(firestore.FieldPath.documentId())
+  //     //   .limit(8)
+  //     //   .get();
+
+  //     // const items = snapshot.docs.map((doc) => doc.data());
+  //     // setProducts(items);
+  //     // setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
+  //     // setHasMore(items.length >= 8);
+  //   } catch (error) {
+  //     console.error('Error fetching products:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const fetchData = async () => {
     try {
       setLoading(true);
-
+  
       const snapshot = await firestore()
         .collection('Product')
         .where('category', '==', categoryname)
         .orderBy(firestore.FieldPath.documentId())
         .limit(8)
         .get();
-
-      const items = snapshot.docs.map((doc) => doc.data());
+  
+      const items = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        key: doc.id,
+      }));
+  
       setProducts(items);
       setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
       setHasMore(items.length >= 8);
@@ -260,6 +343,7 @@ const ProductListScreen = ( {route}: any ) => {
     }
   };
 
+// const testproduct = products.map((product, index)=>console.log('Product: ', product.key))
   useEffect(() => {
     fetchData();
     console.log('category:', categoryname);
@@ -299,7 +383,6 @@ const ProductListScreen = ( {route}: any ) => {
     const handleProductPress = (product: any) => {
     navigation.navigate('ChitietSP', {product});
     // console.log('ID: ', product.id);
-
   };
   const filterProducts = (keyword: string) => {
         const filteredProducts = products.filter(item =>
@@ -368,7 +451,9 @@ const ProductListScreen = ( {route}: any ) => {
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <Text>Load more</Text>
+          // <Text>Load more</Text>
+          <ActivityIndicator size="large" />
+
         )}
       </TouchableOpacity>
     );
@@ -384,11 +469,6 @@ const ProductListScreen = ( {route}: any ) => {
           placeholder="Tìm sản phẩm..."
           style={styles.inputtimkiem}
         />
-        {/* <TouchableOpacity style={styles.btntimkiem} >
-          <Text style={{color: '#fff', fontSize: 16, textAlign: 'center'}}>
-            Tìm kiếm
-          </Text>
-        </TouchableOpacity> */}
       </View>
       <FlatList
         data={filteredProducts}

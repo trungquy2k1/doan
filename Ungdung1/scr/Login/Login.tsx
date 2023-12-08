@@ -8,55 +8,77 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import firestore, {Filter} from '@react-native-firebase/firestore';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {DocumentData, QueryDocumentSnapshot} from 'firebase/firestore';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {styles} from './style';
 import MyButton from '../../component/Button/Mybutton';
-import { AppContext } from '../../component/AppContext/AppContext';
+import {AppContext} from '../../component/AppContext/AppContext';
+import {MainStackParamList} from '../types/RootList';
 // export const EmailContext = createContext();
 
-const LoginScreen = ({navigation}) => {
- 
+const LoginScreen = ({
+  navigation,
+}: NativeStackScreenProps<MainStackParamList>) => {
+  //  const navigation = useNavigation<NativeStackScreenProps<MainStackParamList>>();
   const {emailname, setEmailname} = useContext(AppContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const [data, setData] = useState<{id: string}[]>([]);
-  const [data, setData] = useState<
-    {
-      id: string;
-    }[]
-  >([]);
+  const [data, setData] = useState<DocumentData[]>([]);
+  // const [data, setData] = useState([]);
+  // const [data, setData] = useState<QueryDocumentSnapshot<DocumentData>[]>([]);
+  // const [data, setData] = useState<QueryDocumentSnapshot<DocumentData>[]>([]);
+
+  // const [data, setData] = useState<
+  //   {
+  //     // password: string;
+  //     // email: string;
+  //     id: string;
+  //   }[]
+  // >([]);
 
   const handleLogin = async () => {
     // const user = data.find(
     //   item => item.email === email && item.password === password,
     // );
+    const user = data.map((datas)=>(datas.email === email && datas.password === password))
 
-    // if (user) {
-    //   // Đăng nhập thành công
-    //   Alert.alert('Thông báo', 'Đăng nhập thành công');
-    //   navigation.navigate('Home');
-    // } else {
-    //   // Đăng nhập thất bại
-    //   Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
-    // }
-    try {
-      const userCredential = await auth().signInWithEmailAndPassword(
-        email,
-        password,
-      );
-      if (userCredential) {
-        // Đăng nhập thành công
-        Alert.alert('Thông báo', 'Đăng nhập thành công');
-        navigation.navigate('Home');
-        setEmailname(email)
-      }
-    } catch (error) {
+    if (user) {
+      // Đăng nhập thành công
+      console.log('ohahahaha: ', data)
+
+      // Alert.alert('Thông báo', 'Đăng nhập thành công');
+      // navigation.navigate('Home');
+      // await AsyncStorage.setItem('emailname', emailname);
+      navigation.navigate('Home');
+      // setEmailname(email)
+    } else {
       // Đăng nhập thất bại
       Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
     }
+    
+// console.log('User: ', data);
+    // try {
+    //   const userCredential = await auth().signInWithEmailAndPassword(
+    //     email,
+    //     password,
+    //   );
+    //   if (userCredential) {
+    //     // Đăng nhập t'User: ', data)hành công
+    //     Alert.alert('Thông báo', 'Đăng nhập thành công');
+    //     navigation.navigate('Home');
+    //     setEmailname(email);
+    //     // console.log('User: ', data);
+    //   }
+    // } catch (error) {
+    //   // Đăng nhập thất bại
+    //   Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
+    // }
   };
 
   async function onGoogleButtonPress() {
@@ -80,38 +102,52 @@ const LoginScreen = ({navigation}) => {
     });
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
+  
+  // console.log('email: ', email)
   const fetchData = async () => {
+    const emailInput = email; 
+    const passwordInput = password;
     try {
-      const collectionRef = firestore().collection('User');
-      const snapshot = await collectionRef.get();
+      const collectionRef = firestore()
+        .collection('User')
+        .where('email', '==', emailInput)
+        .where('password', '==', passwordInput);
 
-      const documents = snapshot.docs.map(doc => ({
+      const snapshot = await collectionRef.get();
+      const item = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      setData(documents);
+      setData(item);
+      data.map(((items)=>setEmailname(items.username)))
+      // setEmailname()
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
   };
-
+  useEffect(() => {
+    fetchData();
+    console.log("emailname: ", emailname)
+  }, []);
   return (
     // <AppContext.Provider value={{ name, setName }}>
     <View style={styles.container}>
       <Text style={[styles.texttitle, {color: '#ff6600', marginVertical: 20}]}>
         Đăng Nhập
       </Text>
-
+      {data.map((item, index)=>(
+        <View  key={index}>
+        <Text>{item.id} </Text>
+        <Text> {emailname} </Text>
+        </View>
+      ))}
       <TextInput
         style={styles.input}
         placeholder="Email..."
         value={email}
         onChangeText={text => setEmail(text)}
+        inputMode="email"
       />
       <TextInput
         style={styles.input}
@@ -156,7 +192,7 @@ const LoginScreen = ({navigation}) => {
         // onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}>
         onPress={onGoogleButtonPress}>
         <Image
-          source={require('./Image/social.png')}
+          source={require('../Image/Image/social.png')}
           style={styles.loginicon}
         />
         <Text style={styles.buttonText}>Đăng nhập với Google</Text>
@@ -188,6 +224,8 @@ const LoginScreen = ({navigation}) => {
         />
         <Text style={styles.buttonText}>Login FaceBook</Text>
       </TouchableOpacity> */}
+      
+      
     </View>
     // </AppContext.Provider>
   );

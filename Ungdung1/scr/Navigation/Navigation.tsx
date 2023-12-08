@@ -7,9 +7,11 @@ import auth from '@react-native-firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {MainStackParamList} from '../types/RootList';
+import HomeScr from '../Home/HomeScr';
 import LoginScreen from '../Login/Login';
 import Register from '../Register/Register';
 import ProductScreen from '../Product/Product';
+// import ChitietSP from '../ChitietSp/Chitietsp';
 import ChitietSP from '../ChitietSp/Chitietsp';
 import BottomTabNavigation from './BottomTab';
 import Payment from '../Pay/Payment';
@@ -36,32 +38,33 @@ const Navigation = () => {
   }
   return (
     <AppProvider>
-    <NavigationContainer>
+    <NavigationContainer >
       {/* <Stack.Navigator initialRouteName="Home"> */}
       {/* <RootStack.Navigator initialRouteName="Category"> */}
 
-      {
-        user ? (
-          <RootStack.Navigator initialRouteName="Home">
+      {/* {
+        user ? ( */}
+          <RootStack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
             <RootStack.Screen name="BottomTabNavigation" component={BottomTabNavigation}  />
             {/* <RootStack.Screen name='BottomTabBar' component={BottomTabBarr} /> */}
             {/* <RootStack.Screen name="Category" component={Category} /> */}
+            {/* <RootStack.Screen name="Home" component={HomeScr} /> */}
             <RootStack.Screen name="ProductScreen" component={ProductScreen} />
             <RootStack.Screen name="ChitietSP" component={ChitietSP} />
             <RootStack.Screen name="Payment" component={Payment} />
 
             {/* <RootStack.Screen name='Favories' component={Favories} /> */}
             {/* <RootStack.Screen name='BottomTabBar' component={BottomTabNavigation} /> */}
-          </RootStack.Navigator>
-        ) : (
-          <RootStack.Navigator>
+          {/* </RootStack.Navigator> */}
+        {/* ) : ( */}
+          {/* <RootStack.Navigator> */}
             <RootStack.Screen name="Login" component={LoginScreen} />
             <RootStack.Screen name="Register" component={Register} />
 
           </RootStack.Navigator>
-        )
-        // {/* {/* <RootStack.Screen name="ChitietSP" component={ChitietSP} /> */}
-      }
+        {/* ) */}
+       {/* {/* <RootStack.Screen name="ChitietSP" component={ChitietSP} /> */}
+      {/* } */}
     </NavigationContainer>
     </AppProvider>
   );
