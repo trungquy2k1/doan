@@ -133,24 +133,26 @@
 // export default AddProduct;
 
 import React, { useState } from 'react';
-import './Addproduct.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+import Modal from 'react-modal';
 // import firebase from 'firebase/app';
 // import { firebaseConfig } from '../../../../firebase';
+import styles from './Addproduct.module.css';
 import { storage, db } from '../../../../firebase';
 
 function AddProduct() {
     const [imageUpload, setImageUpload] = useState();
+
     const [productName, setProductName] = useState('');
     const [productPrice, setProductPrice] = useState('');
+    const [category, setCategory] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+
     const [giagoc, setGiagoc] = useState(0);
     const [giamgia, setGiamgia] = useState(0);
 
-    const [category, setCategory] = useState('');
-    const [description, setDescription] = useState('');
-
-    const [imageUrl, setImageUrl] = useState('');
     // const [variations, setVariations] = useState([]);
 
     const uploadFile = () => {
@@ -272,9 +274,12 @@ function AddProduct() {
     // };
 
     return (
-        <section className="todo-container">
-            <div className="todo">
-                <h1 className="header">Add Product</h1>
+        // <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
+        //     <button onClick={() => onRequestClose()}>Trở lại</button>
+
+        <section className={styles.todocontainer}>
+            <div className={styles.todo}>
+                <h1 className={styles.header}>Add Product</h1>
 
                 <div>
                     <div>
@@ -312,7 +317,7 @@ function AddProduct() {
                         </div>
 
                         <div>
-                            <button type="submit" className="btn" onClick={resulPrice}>
+                            <button type="submit" className={styles.btn} onClick={resulPrice}>
                                 Kết quả
                             </button>
                             <p>Giá bán: {productPrice} VND</p>
@@ -356,14 +361,15 @@ function AddProduct() {
                         <button onClick={addVariation}>Thêm loại sản phẩm</button>
                     </div>*/}
 
-                    <div className="btn-container">
-                        <button type="submit" className="btn" onClick={addProduct}>
+                    <div className={styles.btncontainer}>
+                        <button type="submit" className={styles.btn} onClick={addProduct}>
                             Thêm sản phẩm
                         </button>
                     </div>
                 </div>
             </div>
         </section>
+        // </Modal>
     );
 }
 

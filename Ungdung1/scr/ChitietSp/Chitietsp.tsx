@@ -12,7 +12,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {DocumentData} from 'firebase/firestore';
+import {DocumentData, where} from 'firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
 import {useRoute} from '@react-navigation/native';
@@ -24,7 +24,7 @@ import {AppContext} from '../../component/AppContext/AppContext';
 import Header2 from '../../component/Head/Header';
 const ChitietSP = ({route, fetchUpdate}: any) => {
   const {params} = useRoute();
-  const {idProduct, setIdproduct} = useContext(AppContext);
+  const {idProduct, setIdproduct, emailname} = useContext(AppContext);
   const navigation = useNavigation();
   const {product} = route.params;
 
@@ -34,6 +34,7 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedButton, setSelectedButton] = useState('mota');
   const [proid, setProid] = useState('');
+  const [uselike, setUserlike] = useState('');
   const [selectedFavories, setSelectedFavories] = useState(!product.favories);
   const [refreshingComment, setRefreshingComment] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -84,7 +85,11 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
     const items = snapshot.docs.map(doc => ({
       ...doc.data(),
       id: doc.id,
+      // hasLiked: false, 
     }));
+    {comments.map(((cm)=>(
+      setUserlike(cm.usernamelike)
+    )))}
     setComments(items);
   };
   const deleteComments = async (commentKey: string) => {
@@ -198,6 +203,7 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
         quantity: quantity,
         price: product.price * quantity,
         image: product.image,
+        username: emailname,
       };
 
       await firestore().collection('Cart').add(cartItem);
@@ -218,17 +224,71 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
     }
   };
 
-  const handleLike = () => {
-    setClickLike(!clickLike)
-    if(clickLike == true){
-      setNumberLike(pre => pre+1)
-    }else{
-      setNumberLike(pre => pre-1)
-    }
-  }
+  // const handleLike = () => {
+  //   if(!clickLike){
+  //     setNumberLike(numberLike+1)
+  //   }else{
+  //     setNumberLike(numberLike-1)
+  //   }
+  //   setClickLike(!clickLike)
+  // }
+  const handleLikeComment = async (commentID) => {
+    try {
+      const commentRef = await firestore().collection('comments').where('usernamelike', '==', emailname).get();
+      // const items = commentRef.docs.map(doc => ({
+      //   ...doc.data(),
+      //   id: doc.id,
+      //   userlike: doc.data().usernamelike,
+      //   // hasLiked: false, 
+      // }));
+      if(commentRef.empty){
+        //   commentRef.update({
+        //   // usernamelike: emailname,
+        //   likes: !clickLike
+        // });
+        // const updatedLike = existingLike.likes + 1;
+        // await docRef.update({
+        //   likes: updatedLike,
+          
+        //   // price: updatedPrice,
+        // });
+        // const commentlike = {
+        //   likes: numberLike+1
+        // };
+        // const docRef = commentRef.docs[0].ref;
+      // const existingLike = commentRef.docs[0].data();
+        // const updatedLike = [...existingLike.usernamelike, emailname]
+        await firestore().collection('comment').doc(commentID).update({
+          likes: numberLike+1,
+          // usernamelike: [...uselike, emailname]
+        });
+          Alert.alert('Like Okokok');
+      }
+      else{
+        const docRef = commentRef.docs[0].ref;
+      const existingLike = commentRef.docs[0].data();
+        
+        const updatedLike = existingLike.likes - 1;
+        await docRef.update({
+          likes: updatedLike,
+          // price: updatedPrice,
+        });
+        Alert.alert('Bỏ like');
+      }
+      
+      
+      
+      // setClickLike(!clickLike)
+    } catch (error){
+        console.log(error);
+      }
+    };
+  
   return (
     <View style={styles.container}>
-      <Header2 navigation={navigation} />
+      <Header2 navigation={navigation}
+      source={require('../../scr/Image/Category/cart.png')}
+      trangcon='Cart' nd={undefined}      />
       {/* <Image source={{ uri: product.image }} style={{ width: 200, height: 200 }} /> */}
       <View style={styles.img}>
         <ImageBackground
@@ -462,8 +522,10 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
                   {/* Nội dung comment */}
                   <Text style={styles.content}> {cm.content} </Text>
                   <View style={{flexDirection:'row', marginTop: 5}}>
-                  <TouchableOpacity onPress={handleLike}>
-                  {clickLike == false ? (
+                  <TouchableOpacity onPress={() =>handleLikeComment(cm.key)}>
+                  {/* <TouchableOpacity onPress={handleLikeComment}> */}
+
+                  {!clickLike  ? (
                       <Image 
                       source={require('../Image/Icon/like.png')}
                       style={{width: 25, height: 25, marginRight: 5}}
@@ -476,7 +538,16 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
                   )}
                     
                     </TouchableOpacity>
-                    <Text style={{fontSize: 18}}>0</Text>
+                    {/* <Text style={{fontSize: 18}}> {numberLike} </Text> */}
+                    <Text style={{fontSize: 18}}> {cm.likes} </Text>
+                    {/* <Text style={{fontSize: 18}}> {cm.usernamelike} </Text> */}
+                    {cm.usernamelike == '' ? (
+                      <Text style={styles.name}>Người dùng</Text>
+                    ) : (
+                      
+                      <Text style={styles.name}> {cm.usernamelike} </Text>
+                    )}
+
                   </View>
                 </View>
               </View>

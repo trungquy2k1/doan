@@ -16,6 +16,7 @@ import ChitietSP from '../ChitietSp/Chitietsp';
 import BottomTabNavigation from './BottomTab';
 import Payment from '../Pay/Payment';
 import AppProvider from '../../component/AppContext/AppContext';
+import ListOrder from '../orderList/Listorder';
 const Navigation = () => {
   // const Stack = createNativeStackNavigator();
   const RootStack = createStackNavigator<MainStackParamList>();
@@ -44,14 +45,15 @@ const Navigation = () => {
 
       {/* {
         user ? ( */}
-          <RootStack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
+          <RootStack.Navigator initialRouteName="Login" screenOptions={{headerShown:false}}>
             <RootStack.Screen name="BottomTabNavigation" component={BottomTabNavigation}  />
             {/* <RootStack.Screen name='BottomTabBar' component={BottomTabBarr} /> */}
             {/* <RootStack.Screen name="Category" component={Category} /> */}
-            {/* <RootStack.Screen name="Home" component={HomeScr} /> */}
+            {/* <RootStack.Screen name="Home" component={BottomTabNavigation} /> */}
             <RootStack.Screen name="ProductScreen" component={ProductScreen} />
             <RootStack.Screen name="ChitietSP" component={ChitietSP} />
             <RootStack.Screen name="Payment" component={Payment} />
+            <RootStack.Screen name='ListOrder' component={ListOrder} />
 
             {/* <RootStack.Screen name='Favories' component={Favories} /> */}
             {/* <RootStack.Screen name='BottomTabBar' component={BottomTabNavigation} /> */}

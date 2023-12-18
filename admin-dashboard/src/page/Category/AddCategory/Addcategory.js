@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import './Addcategory.css';
+import styleaddpro from './Addcategory.module.css';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
+// import Modal from 'react-modal';
 
 // import { storage, db } from '../../../../firebase';
 import { storage, db } from '../../../firebase';
@@ -42,9 +43,11 @@ function AddCategory() {
     };
 
     return (
-        <section className="todo-container">
-            <div className="todo">
-                <h1 className="header">Add Product</h1>
+        // <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
+        //     <button onClick={() => onRequestClose()}>Trở lại</button>
+        <section className={styleaddpro.todocontainer}>
+            <div className={styleaddpro.todo}>
+                <h1 className={styleaddpro.header}>Add Product</h1>
 
                 <div>
                     <div>
@@ -65,7 +68,7 @@ function AddCategory() {
                         <button onClick={uploadFile}>Upload</button>
                     </div>
 
-                    <div className="btn-container">
+                    <div className={styleaddpro.btncontainer}>
                         <button type="submit" className="btn" onClick={addProduct}>
                             Thêm loại sản phẩm
                         </button>
@@ -73,6 +76,7 @@ function AddCategory() {
                 </div>
             </div>
         </section>
+        // </Modal>
     );
 }
 

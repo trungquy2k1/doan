@@ -9,26 +9,34 @@
 // }
 // export default Payment
 
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, TextInput, Alert} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-
+import {useNavigation} from '@react-navigation/native';
 
 import styles from './style';
 import MyButton from '../../component/Button/Mybutton';
 // import {FlatList} from 'react-native-gesture-handler';
-import { AppContext } from '../../component/AppContext/AppContext';
+import {AppContext} from '../../component/AppContext/AppContext';
+import Header2 from '../../component/Head/Header';
+
 const Payment = ({route}: any) => {
   const {formattedTotalAmount} = route.params;
+  const navigation = useNavigation();
+  const {emailname} = useContext(AppContext);
+
   const [isPress, setIsPress] = useState(false);
   const [edit, setEdit] = useState(true);
+  const [xacnhan, setXacnhan] = useState(false);
+  const [hienthitien, setHienthitien] = useState(false);
 
   const [name, setName] = useState('');
   const [sdt, setSdt] = useState('');
   const [diachi, setDiachi] = useState('');
-const {emailname} = useContext(AppContext)
+  const [sodon, setSodon] = useState(0);
+
   const [checkboxes, setCheckboxes] = useState([
     {
       id: 1,
@@ -44,11 +52,13 @@ const {emailname} = useContext(AppContext)
 
   const onButtonPress = () => {
     const selectedCheckBoxes = checkboxes.find(cb => cb.checked === true);
-    if (name == '' && sdt == '' && diachi == '') {
+    if (name == '' || sdt == '' || diachi == '') {
       Alert.alert('Vui lồng điền đầy đủ thông tin');
     } else {
       setIsPress(true);
       setEdit(false);
+      // setXacnhan(true);
+      setXacnhan(!xacnhan);
     }
   };
 
@@ -59,25 +69,65 @@ const {emailname} = useContext(AppContext)
     }));
     setCheckboxes(checkboxData);
   };
+  const handleXacnhan = () => {
+    // setXacnhan(!xacnhan);
+    setIsPress(!isPress);
+    setSodon(pre => pre + 1);
+    setHienthitien(!hienthitien);
+    setEdit(true);
+    // na
+  };
 
+  const addOrder = async () => {
+    try {
+      await firestore().collection('Order').add({
+        tennguoinhan: name,
+        sodienthoai: sdt,
+        diachi: diachi,
+        username: emailname,
+      });
 
+      setIsPress(!isPress);
+      setHienthitien(!hienthitien);
+      setEdit(true);
+      setName('');
+      setSdt('');
+      setDiachi('');
+      Alert.alert('thêm thành công');
+    } catch (error) {
+      console.log('Lỗi: ', error);
+    }
+  };
+  const FetchOrder = async () => {
+    const querySnapshot = await firestore()
+      .collection('Order')
+      .where('username', '==', emailname)
+      .get();
+    
+      setSodon(pre => pre + 1);
+    
+  };
+
+  useEffect(()=>{
+    FetchOrder()
+  },[])
   // const sendEmail = async (email: string, subject: string, body: string) => {
   //   try {
   //     // await auth().signInWithEmailAndPassword('YOUR_EMAIL', 'YOUR_PASSWORD');
   //     const user = auth().currentUser;
-  
+
   //     if (user) {
   //       await user.sendEmailVerification();
-  
+
   //       const message = {
   //         from: email,
   //         to: user.email,
   //         subject: subject,
   //         text: body
   //       };
-  
+
   //       await firestore().collection('emails').add(message);
-  
+
   //       console.log('Email sent successfully!');
   //     } else {
   //       console.error('User is null.');
@@ -86,11 +136,27 @@ const {emailname} = useContext(AppContext)
   //     console.error('Error sending email:', error);
   //   }
   // };
-  console.log('emai: ', emailname)
+  console.log('emai: ', emailname);
   // Khi người dùng nhấn nút thanh toán
-  
+
   return (
     <View style={{justifyContent: 'center', alignItems: 'center'}}>
+      <Header2
+        navigation={navigation}
+        source={require('../../scr/Image/Icon/list.png')}
+        trangcon="ListOrder"
+        nd={
+          sodon != 0 ? (
+            // {sodon}
+            <Text>{sodon}</Text>
+          ) : (
+            // <Text>0</Text>
+            // 0
+            '0'
+          )
+        }
+        // nd= {sodon}
+      />
       <Text
         style={{
           fontSize: 24,
@@ -109,6 +175,7 @@ const {emailname} = useContext(AppContext)
           editable={edit}
         />
         <TextInput
+          keyboardType="phone-pad"
           placeholder="Số điện thoại"
           style={styles.input}
           value={sdt}
@@ -126,7 +193,11 @@ const {emailname} = useContext(AppContext)
       <View style={styles.tong}>
         <View style={styles.tongtien}>
           <Text style={styles.txttongtien}>Tổng tiền</Text>
-          <Text>{formattedTotalAmount} VND</Text>
+          {!hienthitien ? (
+            <Text>{formattedTotalAmount} VND</Text>
+          ) : (
+            <Text>0 VND</Text>
+          )}
         </View>
 
         <View>
@@ -146,17 +217,24 @@ const {emailname} = useContext(AppContext)
         <View style={styles.thongtin}>
           <Text>OKOKOK</Text>
           <View style={styles.ten}>
-            <Text style={[styles.txtthongtin, {borderRightWidth: 1,width:'38%'}]}>Tên người nhận</Text>
+            <Text
+              style={[styles.txtthongtin, {borderRightWidth: 1, width: '38%'}]}>
+              Tên người nhận
+            </Text>
             <Text style={styles.txtthongtin}>{name}</Text>
-
           </View>
           <View style={styles.ten}>
-            <Text style={[styles.txtthongtin, {borderRightWidth: 1,width:'38%'}]}>Địa chỉ </Text>
+            <Text
+              style={[styles.txtthongtin, {borderRightWidth: 1, width: '38%'}]}>
+              Địa chỉ{' '}
+            </Text>
             <Text style={styles.txtthongtin}>{diachi}</Text>
-
           </View>
           <View style={styles.ten}>
-            <Text style={[styles.txtthongtin, {borderRightWidth: 1,width:'38%'}]}>SĐT người nhận</Text>
+            <Text
+              style={[styles.txtthongtin, {borderRightWidth: 1, width: '38%'}]}>
+              SĐT người nhận
+            </Text>
             <Text style={styles.txtthongtin}>{sdt}</Text>
           </View>
 
@@ -165,30 +243,41 @@ const {emailname} = useContext(AppContext)
             <Text style={styles.txtthongtin}>{emailname}</Text>
           </View> */}
           <View>
-            <Text style={styles.txtthongtin}>Tổng tiền: {formattedTotalAmount} VND</Text>
+            <Text style={styles.txtthongtin}>
+              Tổng tiền: {formattedTotalAmount} VND
+            </Text>
           </View>
 
           <View>
             {checkboxes.map(cb => {
               if (cb.checked) {
-                return <Text key={cb.id} style={[styles.txtthongtin,{marginBottom: 20, height: 80,}]}>Thanh toán bằng: {cb.title}</Text>;
+                return (
+                  <Text
+                    key={cb.id}
+                    style={[styles.txtthongtin, {marginBottom: 5, height: 80}]}>
+                    Thanh toán bằng: {cb.title}
+                  </Text>
+                );
               }
               return null;
             })}
           </View>
-          {/* <MyButton 
-            titlebtn='thanh toán'
-            onPress={()=>sendEmail(emailname, 'Thanh toán thành công', 'Cảm ơn bạn đã thanh toán!')}
-          /> */}
+          <MyButton
+            titlebtn="thanh toán"
+            // onPress={()=>sendEmail(emailname, 'Thanh toán thành công', 'Cảm ơn bạn đã thanh toán!')}
+            onPress={addOrder}
+            // style={{width: 400, height: 180}}
+          />
         </View>
       )}
+      {!xacnhan && (
+        <MyButton
+          titlebtn="Xác nhận"
+          onPress={onButtonPress}
 
-      <MyButton
-        titlebtn="Xác nhận"
-        onPress={onButtonPress}
-
-        // style={{justifyContent: 'center', width: '80%'}}
-      />
+          // style={{justifyContent: 'center', width: '80%'}}
+        />
+      )}
     </View>
   );
 };

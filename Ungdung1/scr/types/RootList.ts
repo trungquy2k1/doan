@@ -11,6 +11,7 @@ export type MainStackParamList = {
     Profile: undefined;
     Cart: undefined;
     Payment: undefined;
+    ListOrder: undefined;
     ProductScreen: { categoryname: string };
     ChitietSP: { product: string };
 };

@@ -3,7 +3,7 @@
     margin: 0;
     box-sizing: border-box;
 }
-.todo-container {
+.todocontainer {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,7 +25,7 @@ input {
     width: 100%;
 }
 
-.btn-container {
+.btncontainer {
     display: flex;
     justify-content: center;
     align-items: center;

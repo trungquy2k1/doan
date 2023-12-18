@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+// import Modal from 'react-modal';
 
-import './adduser.css';
+import styles from './adduser.module.css';
 import { db, auth } from '../../../../firebase';
 const AddUser = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
 
     const [user, setUser] = useState([]);
 
@@ -17,17 +19,33 @@ const AddUser = () => {
             await createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
-                console.log(user);
+                // console.log(user);
                 // ...
             });
             const docRef = await addDoc(collection(db, 'User'), {
                 email: email,
                 password: password,
+                username: name,
             });
             console.log('Document written with ID: ', docRef.id);
             alert('Thêm thành công');
         } catch (e) {
-            console.error('Error adding document: ', e);
+            // console.error('Error adding document: ', e);
+            const errorCode = e.code;
+            let errorMessage = '';
+
+            switch (errorCode) {
+                case 'auth/email-already-in-use':
+                    errorMessage = 'Email đã được sử dụng';
+                    break;
+                // Các mã lỗi khác và thông báo tương ứng
+                default:
+                    errorMessage = 'Đã xảy ra lỗi';
+                    break;
+            }
+
+            alert(errorMessage);
+            // alert(e);
         }
     };
 
@@ -44,9 +62,11 @@ const AddUser = () => {
     }, []);
 
     return (
-        <section className="todo-container">
-            <div className="todo">
-                <h1 className="header">Add User</h1>
+        // <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
+        //     <button onClick={() => onRequestClose()}>Trở lại</button>
+        <section className={styles.todocontainer}>
+            <div className={styles.todo}>
+                <h1 className={styles.header}>Add User</h1>
 
                 <div>
                     <div>
@@ -56,16 +76,21 @@ const AddUser = () => {
                             placeholder="Nhập password ..."
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                        <input
+                            type="text"
+                            placeholder="Nhập tên người dùng ..."
+                            onChange={(e) => setName(e.target.value)}
+                        />
                     </div>
 
-                    <div className="btn-container">
-                        <button type="submit" className="btn" onClick={addUser}>
+                    <div className={styles.btncontainer}>
+                        <button type="submit" className={styles.todocontainer} onClick={addUser}>
                             Thêm
                         </button>
                     </div>
                 </div>
 
-                <div className="todo-content">
+                <div className={styles.todocontent}>
                     {user?.map((users, i) => (
                         <p key={i}>{users.email}</p>
                     ))}
@@ -75,6 +100,7 @@ const AddUser = () => {
                 </div>
             </div>
         </section>
+        // </Modal>
     );
 };
 

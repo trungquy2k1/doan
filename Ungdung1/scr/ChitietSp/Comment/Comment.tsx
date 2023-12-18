@@ -64,7 +64,11 @@ const CommentScreen = ({fetchComment}) => {
         productId:idProduct,
         username: emailname,
         content: commentText,
-        timestamp: firestore.Timestamp.fromDate(new Date()) 
+        timestamp: firestore.Timestamp.fromDate(new Date()), 
+        likes: 0,
+        // usernamelike: [...emailname, emailname]
+        usernamelike: 'hi'
+        // hasLiked: false,
       };
 
       // Lưu bình luận vào Firestore

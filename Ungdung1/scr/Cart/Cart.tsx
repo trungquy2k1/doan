@@ -10,7 +10,7 @@
 
 // export default Cart
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
@@ -28,19 +28,21 @@ import firestore from '@react-native-firebase/firestore';
 import {DocumentData, doc} from 'firebase/firestore';
 // import firebase from '../firebase/Firebase';
 // import Drawer from '../navigation/Drawer';
+import { AppContext } from '../../component/AppContext/AppContext';
 
 const Giohang = () => {
   const [products, setProducts] = useState<DocumentData[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
+const {emailname} = useContext(AppContext)
   const navigation = useNavigation();
 
    const featchData = async () => {
     try {
       const subscriber = firestore()
         .collection('Cart')
+        .where('username', '==', emailname)
         .onSnapshot(querySnapshot => {
           const cart: React.SetStateAction<DocumentData[]> | { key: string; }[] = [];
 
@@ -97,6 +99,8 @@ const Giohang = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={[styles.name,{ color: 'blue', fontSize: 24}]}>Giỏ hàng</Text>
+      <Text style={[styles.name, {fontSize: 18}]}>Các sản phẩm mà {emailname} đã chọn</Text>
       {/* <Drawer tile="GIỎ HÀNG" /> */}
       <ScrollView
         refreshControl={

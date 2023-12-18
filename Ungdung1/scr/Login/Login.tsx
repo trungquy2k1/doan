@@ -14,13 +14,11 @@ import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {DocumentData, QueryDocumentSnapshot} from 'firebase/firestore';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {styles} from './style';
 import MyButton from '../../component/Button/Mybutton';
 import {AppContext} from '../../component/AppContext/AppContext';
 import {MainStackParamList} from '../types/RootList';
-// export const EmailContext = createContext();
 
 const LoginScreen = ({
   navigation,
@@ -50,12 +48,12 @@ const LoginScreen = ({
 
     if (user) {
       // Đăng nhập thành công
-      console.log('ohahahaha: ', data)
 
       // Alert.alert('Thông báo', 'Đăng nhập thành công');
       // navigation.navigate('Home');
-      // await AsyncStorage.setItem('emailname', emailname);
-      navigation.navigate('Home');
+      navigation.navigate('BottomTabNavigation');
+      data.map((datas)=>(setEmailname(datas.username)))
+      // setEmailname(user.username);
       // setEmailname(email)
     } else {
       // Đăng nhập thất bại
@@ -129,6 +127,8 @@ const LoginScreen = ({
   useEffect(() => {
     fetchData();
     console.log("emailname: ", emailname)
+    console.log('ohahahaha: ', data)
+
   }, []);
   return (
     // <AppContext.Provider value={{ name, setName }}>

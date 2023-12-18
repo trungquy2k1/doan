@@ -8,8 +8,9 @@ const Home = ({ children }) => {
             <Header />
             <div className="containerHome">
                 <div>
-                    <Siderbar />
+                    <Siderbar checkClick />
                 </div>
+                {/* <h1>Đây là trang Admin</h1> */}
                 <div className="rightcontainer">{children}</div>
             </div>
         </div>
