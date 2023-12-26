@@ -53,13 +53,14 @@ const LoginScreen = ({
       // navigation.navigate('Home');
       navigation.navigate('BottomTabNavigation');
       data.map((datas)=>(setEmailname(datas.username)))
+
       // setEmailname(user.username);
       // setEmailname(email)
     } else {
       // Đăng nhập thất bại
       Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
     }
-    
+    // data.map((datas)=>(setEmailname(datas.username)))
 // console.log('User: ', data);
     // try {
     //   const userCredential = await auth().signInWithEmailAndPassword(
@@ -129,7 +130,7 @@ const LoginScreen = ({
     console.log("emailname: ", emailname)
     console.log('ohahahaha: ', data)
 
-  }, []);
+  }, [email]);
   return (
     // <AppContext.Provider value={{ name, setName }}>
     <View style={styles.container}>

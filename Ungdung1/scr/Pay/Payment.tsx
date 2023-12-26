@@ -10,7 +10,7 @@
 // export default Payment
 
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, TextInput, Alert} from 'react-native';
+import {View, Text, TextInput, Alert, TouchableOpacity, ImageBackground} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -85,6 +85,9 @@ const Payment = ({route}: any) => {
         sodienthoai: sdt,
         diachi: diachi,
         username: emailname,
+        ngaydat: firestore.Timestamp.fromDate(new Date()),
+        state: 'Đang giao hàng',
+        tongtien: formattedTotalAmount,
       });
 
       setIsPress(!isPress);
@@ -111,6 +114,10 @@ const Payment = ({route}: any) => {
   useEffect(()=>{
     FetchOrder()
   },[])
+
+  const handleClick = () =>{
+    navigation.navigate('ListOrder');
+  }
   // const sendEmail = async (email: string, subject: string, body: string) => {
   //   try {
   //     // await auth().signInWithEmailAndPassword('YOUR_EMAIL', 'YOUR_PASSWORD');
@@ -141,21 +148,50 @@ const Payment = ({route}: any) => {
 
   return (
     <View style={{justifyContent: 'center', alignItems: 'center'}}>
+      {/* <View
+      style={{
+        flexDirection: 'row',
+        marginBottom: 10,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+      }}>
+      <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
+        <Text style={{fontSize: 18, color: '#000'}}>Trở lại</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.back} onPress={handleClick}>
+        <ImageBackground
+          source={require('../../scr/Image/Icon/list.png')}
+          style={{
+            width: 30,
+            height: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+              {/* <Text style={styles.nd}>{nd}</Text> */}
+              {/* {sodon != 0 ? (
+          <Text>{sodon}</Text>
+        ) : (
+          <Text>0</Text>
+        )}
+        </ImageBackground>
+      </TouchableOpacity>
+      <Text style={{width: 50}}></Text>
+    </View> */} 
       <Header2
         navigation={navigation}
         source={require('../../scr/Image/Icon/list.png')}
         trangcon="ListOrder"
-        nd={
-          sodon != 0 ? (
-            // {sodon}
-            <Text>{sodon}</Text>
-          ) : (
-            // <Text>0</Text>
-            // 0
-            '0'
-          )
-        }
-        // nd= {sodon}
+        nd={sodon != 0 ? (
+          // {sodon}
+          <Text>{sodon}</Text>
+        ) : (
+          // <Text>0</Text>
+          // 0
+          '0'
+        )} ht={false}  
+        onPress={handleClick}
       />
       <Text
         style={{

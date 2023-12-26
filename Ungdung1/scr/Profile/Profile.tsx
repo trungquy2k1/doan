@@ -70,7 +70,9 @@ const Profile = () => {
       </View>
       <View style={styles.chucnang}>
         {/* <View style={{justifyContent: 'space-between'}}> */}
-        <TouchableOpacity style={styles.btnchucnang}>
+        <TouchableOpacity style={styles.btnchucnang}
+          onPress={() => navigation.navigate('ListOrder')}
+        >
           <Text style={styles.txtchucnang}>Lịch sử mua hàng</Text>
           <Text style={styles.txtchucnang}>{'>'}</Text>
         </TouchableOpacity>

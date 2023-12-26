@@ -16,6 +16,13 @@ const styles = StyleSheet.create({
 //     justifyContent: 'center',
 //     alignItems:'center',
 //     // height: 50
+back: {
+  height: 45,
+  backgroundColor: '#fff',
+  width: '90%',
+  justifyContent: 'center',
+  // alignItems: 'center',
+},
 //   }
 tong:{
     borderWidth: 2,

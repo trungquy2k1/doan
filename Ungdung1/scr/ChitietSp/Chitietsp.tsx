@@ -194,6 +194,7 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
     const querySnapshot = await firestore()
       .collection('Cart')
       .where('name', '==', product.name)
+      .where('username', '==', emailname)
       .get();
 
     if (querySnapshot.empty) {
@@ -283,12 +284,15 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
         console.log(error);
       }
     };
+    const handleClick = () =>{
+      navigation.navigate('Cart')
+    }
   
   return (
     <View style={styles.container}>
       <Header2 navigation={navigation}
       source={require('../../scr/Image/Category/cart.png')}
-      trangcon='Cart' nd={undefined}      />
+      trangcon='Cart' nd={undefined}  onPress={handleClick}    />
       {/* <Image source={{ uri: product.image }} style={{ width: 200, height: 200 }} /> */}
       <View style={styles.img}>
         <ImageBackground
