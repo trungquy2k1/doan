@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Button,
   Modal,
@@ -20,6 +20,8 @@ const UpdateProfile = ({visible, onRequestClose}: any) => {
   const [userProfile, setUserProfile]=useState<DocumentData[]>([])
   const [ten, setTen] = useState('');
   const [email, setEmail] = useState('');
+  const [diachi, setDiachi] = useState('');
+  const [sodt, setSodt] = useState('');
   
   console.log(ten);
   const FetchUser = async() => {
@@ -31,11 +33,40 @@ const UpdateProfile = ({visible, onRequestClose}: any) => {
     }))
     setUserProfile(items)
   };
+
+  useEffect(()=>{
+    FetchUser()
+  },[])
+
+  const UpdateProfile = () =>{
+
+  }
+  const handleSave = () => {
+    const updatedProfile = {
+      username: ten || userProfile[0].username, // Sử dụng giá trị mới hoặc giữ nguyên giá trị cũ
+      email: email || userProfile[0].email,
+      sodt: sodt || userProfile[0].sodt, 
+      diachi: diachi || userProfile[0].diachi, 
+
+    };
+  
+    firestore()
+      .collection('User')
+      .doc(userProfile[0].key)
+      .update(updatedProfile)
+      .then(() => {
+        console.log('Cập nhật thành công');
+      })
+      .catch((error) => {
+        console.log('Lỗi khi cập nhật:', error);
+      });
+  };
   return (
     // <Modal visible={props.visible} onRequestClose={props.onRequestClose}>
     <Modal visible={visible} onRequestClose={onRequestClose}>
       <View style={{justifyContent: 'center', alignItems: 'center'}}>
-        <View style={styles.updateinfo}>
+        {userProfile.map((item)=>(
+          <View style={styles.updateinfo} key={item.key}>
           <View
             style={{
               flexDirection: 'row',
@@ -50,9 +81,11 @@ const UpdateProfile = ({visible, onRequestClose}: any) => {
           </View>
           <View style={{marginBottom: 10}}>
             <Text style={{fontSize: 18}}>Tên người dùng</Text>
+            {/* <Text style={{fontSize: 18}}> {item.username} </Text> */}
+
             <MyInput
               // styleinput= {{width: '80%', height:40}}
-              value={ten}
+              value={ten || item.username}
               onChangeText={(text: React.SetStateAction<string>) =>
                 setTen(text)
               }
@@ -60,18 +93,48 @@ const UpdateProfile = ({visible, onRequestClose}: any) => {
           </View>
           <View>
             <Text style={{fontSize: 18}}>Email người dùng</Text>
+            {/* <Text style={{fontSize: 18}}> {item.email} </Text> */}
+
             <MyInput
               // styleinput= {{width: '80%', height:40}}
-              value={email}
+              value={email||item.email}
               onChangeText={(text: React.SetStateAction<string>) =>
                 setEmail(text)
               }
             />
           </View>
-          <TouchableOpacity style={styles.btnsave}>
+          <View>
+            <Text style={{fontSize: 18}}>Số điện thoại</Text>
+            {/* <Text style={{fontSize: 18}}> {item.} </Text> */}
+
+            <MyInput
+              // styleinput= {{width: '80%', height:40}}
+              // value={sodt}
+              value={sodt||item.sodt}
+              onChangeText={(text: React.SetStateAction<string>) =>
+                setSodt(text)
+              }
+            />
+          </View>
+          <View>
+            <Text style={{fontSize: 18}}>Địa chỉ</Text>
+            {/* <Text style={{fontSize: 18}}> {item.email} </Text> */}
+
+            <MyInput
+              // styleinput= {{width: '80%', height:40}}
+              // value={diachi}
+              value={diachi||item.diachi}
+              onChangeText={(text: React.SetStateAction<string>) =>
+                setDiachi(text)
+              }
+            />
+          </View>
+          <TouchableOpacity style={styles.btnsave} onPress={handleSave}>
             <Text style={{fontSize: 18, color: '#fff'}}>Lưu</Text>
           </TouchableOpacity>
         </View>
+        ))}
+        
       </View>
     </Modal>
   );

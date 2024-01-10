@@ -25,6 +25,9 @@ const Siderbar = () => {
             <NavLink to={config.routes.cart} style={{ textDecoration: 'none' }}>
                 <Button title="Cart" onClick={handleCLick} />
             </NavLink>
+            <NavLink to={config.routes.listorder} style={{ textDecoration: 'none' }}>
+                <Button title="Order" onClick={handleCLick} />
+            </NavLink>
         </div>
     );
 };

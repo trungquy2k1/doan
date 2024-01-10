@@ -11,6 +11,7 @@ function AddCategory() {
     const [imageUpload, setImageUpload] = useState();
     const [categoryname, setCategoryname] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+    const [imglogo, setImgLogo] = useState('');
 
     const uploadFile = () => {
         if (!imageUpload) return;
@@ -27,6 +28,20 @@ function AddCategory() {
     };
     console.log('day là link anh: ', imageUrl);
 
+    const uploadLogo = () => {
+        if (!imageUpload) return;
+
+        const imageRef = ref(storage, `images/Category/LogoCate/${imageUpload.name}`);
+
+        uploadBytes(imageRef, imageUpload).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((url) => {
+                console.log(url);
+                setImgLogo(url);
+                alert('Upload logo thành công');
+            });
+        });
+    };
+
     const addProduct = async (e) => {
         e.preventDefault();
 
@@ -34,6 +49,7 @@ function AddCategory() {
             const docRef = await addDoc(collection(db, 'Category'), {
                 categoryname: categoryname,
                 image: imageUrl,
+                imagelogo: imglogo,
             });
             console.log('Document written with ID: ', docRef.id);
             alert('Thêm thành công');
@@ -58,6 +74,21 @@ function AddCategory() {
                             onChange={(e) => setCategoryname(e.target.value)}
                         />
                     </div>
+                    {/* logo */}
+                    <h3>Logo</h3>
+                    <div>
+                        <input
+                            type="file"
+                            onChange={(event) => {
+                                setImageUpload(event.target.files[0]);
+                            }}
+                        />
+                        <button onClick={uploadLogo}>Upload Logo</button>
+                    </div>
+                    {/* logo */}
+
+                    {/* Ảnh */}
+                    <h3>Ảnh</h3>
                     <div>
                         <input
                             type="file"

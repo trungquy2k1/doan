@@ -1,4 +1,3 @@
-
 // import React, {useEffect, useState} from 'react';
 // import {
 //   View,
@@ -23,7 +22,6 @@
 //   const [isRefreshing, setIsRefreshing] = useState(false);
 //   const [numColumns, setNumColumns] = useState(2);
 
-
 //   const fetchData = async () => {
 //     const snapshot = await firestore()
 //       .collection('Favorites')
@@ -41,9 +39,8 @@
 
 //   useEffect(() => {
 //     fetchData();
-//     // 
+//     //
 //   }, []);
-  
 
 //   const handleProductPress = (product: any) => {
 //     navigation.navigate('ChitietSP', {product});
@@ -113,7 +110,7 @@
 //           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
 //         }
 //         numColumns={numColumns}
-//         key={flatListKey} 
+//         key={flatListKey}
 //       />
 //     </View>
 //   );
@@ -121,8 +118,7 @@
 
 // export default Favories;
 
-
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -135,31 +131,32 @@ import {
 // import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import firestore from '@react-native-firebase/firestore';
 import {DocumentData} from 'firebase/firestore';
-import styles from './style';
-// import {MainStackParamList} from '../types/RootList';
 import {useNavigation} from '@react-navigation/native';
+
+import styles from './style';
+import {AppContext} from '../../component/AppContext/AppContext';
+// import {MainStackParamList} from '../types/RootList';
 const Favories = () => {
   const navigation = useNavigation();
+  const {emailname} = useContext(AppContext);
   //   const {categoryname} = route.params;
   const [products, setProducts] = useState<DocumentData[]>([]);
   const [searchText, setSearchText] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [numColumns, setNumColumns] = useState(2);
 
-
   const fetchFavories = async () => {
     const snapshot = await firestore()
-      .collection('Product')
-      .where('favories', '==', true)
+      .collection('Favorites')
+      .where('user', '==', emailname)
       .get();
 
     // const items = snapshot.docs.map(doc => doc.data());
-    const items = snapshot.docs.map((doc) => ({
+    const items = snapshot.docs.map(doc => ({
       ...doc.data(),
       key: doc.id,
     }));
     setProducts(items);
-
   };
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -168,13 +165,11 @@ const Favories = () => {
 
   useEffect(() => {
     fetchFavories();
-    // 
-  }, []);
-  
+    //
+  }, [products.length]);
 
   const handleProductPress = (product: any) => {
     navigation.navigate('ChitietSP', {product});
-
   };
 
   // const handleChangeNumColumns = (newNumColumns) => {
@@ -190,8 +185,21 @@ const Favories = () => {
   };
   const filteredProducts = filterProducts(searchText);
 
+  //Bỏ thích
+  const Dislike = async idfavories => {
+    try {
+      const snapshot = await firestore()
+        .collection('Favorites')
+        .doc(idfavories)
+        .delete();
+      fetchFavories();
+    } catch (err) {
+      console.log('Lỗi rồi: ', err);
+    }
+  };
+
   const renderProductItem = ({item}: any) => (
-    <View>
+    <View style={styles.favories}>
       <TouchableOpacity
         style={styles.productContainer}
         onPress={() => handleProductPress(item)}>
@@ -217,6 +225,9 @@ const Favories = () => {
           </View>
         </View>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.btnxoa} onPress={() => Dislike(item.key)}>
+        <Text style={styles.txtbothich}>Bỏ thích</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -230,6 +241,14 @@ const Favories = () => {
           style={styles.inputtimkiem}
         />
       </View>
+      <Text
+        style={[
+          styles.txtbothich,
+          {color: 'blue', fontSize: 24, marginBottom: 10, textAlign: 'center', fontWeight: '500'},
+        ]}>
+        Đây là các sản phẩm yêu thích của bạn
+      </Text>
+
       <FlatList
         // data={products}
         data={filteredProducts}
@@ -240,7 +259,7 @@ const Favories = () => {
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
         }
         numColumns={numColumns}
-        key={flatListKey} 
+        key={flatListKey}
       />
     </View>
   );

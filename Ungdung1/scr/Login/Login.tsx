@@ -40,45 +40,61 @@ const LoginScreen = ({
   //   }[]
   // >([]);
 
-  const handleLogin = async () => {
-    // const user = data.find(
-    //   item => item.email === email && item.password === password,
-    // );
-    const user = data.map((datas)=>(datas.email === email && datas.password === password))
+//   const handleLogin = async () => {
+//     // const user = data.find(
+//     //   item => item.email === email && item.password === password,
+//     // );
+//     const user = data.map((datas)=>(datas.email === email && datas.password === password))
 
-    if (user) {
-      // Đăng nhập thành công
+//     if (user) {
+//       data.map((datas)=>(setEmailname(datas.username)))
+//     } else {
+//       // Đăng nhập thất bại
+//       Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
+//     }
+//     // data.map((datas)=>(setEmailname(datas.username)))
+// // console.log('User: ', data);
+//     try {
+//       const userCredential = await auth().signInWithEmailAndPassword(
+//         email,
+//         password,
+//       );
+//       if (userCredential) {
+//         Alert.alert('Thông báo', 'Đăng nhập thành công');
+//         navigation.navigate('BottomTabNavigation');
+//         // setEmailname(email);
+//         // console.log('User: ', data);
+//       }
+//     } catch (error) {
+//       // Đăng nhập thất bại
+//       Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
+//     }
+//   };
 
-      // Alert.alert('Thông báo', 'Đăng nhập thành công');
-      // navigation.navigate('Home');
-      navigation.navigate('BottomTabNavigation');
-      data.map((datas)=>(setEmailname(datas.username)))
+const handleLogin = async () => {
+  const user = data.find(item => item.email === email && item.password === password);
 
-      // setEmailname(user.username);
-      // setEmailname(email)
-    } else {
-      // Đăng nhập thất bại
-      Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
+  if (user) {
+    // setEmailname(user.username); // Lưu tên người dùng vào context
+    data.map((datas)=>(setEmailname(datas.username)))
+    try {
+      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      if (userCredential) {
+        // Thêm tên người dùng vào Firestore
+        await firestore().collection('User').doc(user.id).update({
+          username: user.username,
+        });
+
+        Alert.alert('Thông báo', 'Đăng nhập thành công');
+        navigation.navigate('BottomTabNavigation');
+      }
+    } catch (error) {
+      Alert.alert('Thông báo', 'Đăng nhập thất bại');
     }
-    // data.map((datas)=>(setEmailname(datas.username)))
-// console.log('User: ', data);
-    // try {
-    //   const userCredential = await auth().signInWithEmailAndPassword(
-    //     email,
-    //     password,
-    //   );
-    //   if (userCredential) {
-    //     // Đăng nhập t'User: ', data)hành công
-    //     Alert.alert('Thông báo', 'Đăng nhập thành công');
-    //     navigation.navigate('Home');
-    //     setEmailname(email);
-    //     // console.log('User: ', data);
-    //   }
-    // } catch (error) {
-    //   // Đăng nhập thất bại
-    //   Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
-    // }
-  };
+  } else {
+    Alert.alert('Thông báo', 'Email hoặc mật khẩu không đúng');
+  }
+};
 
   async function onGoogleButtonPress() {
     // Check if your device supports Google Play
@@ -86,7 +102,7 @@ const LoginScreen = ({
     // Get the users ID token
     const {idToken} = await GoogleSignin.signIn();
     Alert.alert('Đăng nhập thành công');
-    navigation.navigate('Home');
+    navigation.navigate('BottomTabNavigation');
     // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
@@ -103,24 +119,41 @@ const LoginScreen = ({
 
   
   // console.log('email: ', email)
+  // const fetchData = async () => {
+  //   const emailInput = email; 
+  //   const passwordInput = password;
+  //   try {
+  //     const collectionRef = firestore()
+  //       .collection('User')
+  //       .where('email', '==', emailInput)
+  //       .where('password', '==', passwordInput);
+
+  //     const snapshot = await collectionRef.get();
+  //     const item = snapshot.docs.map(doc => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+
+  //     setData(item);
+  //     // data.map(((items)=>setEmailname(items.username)))
+  //     // setEmailname()
+  //   } catch (error) {
+  //     console.error('Error fetching data: ', error);
+  //   }
+  // };
   const fetchData = async () => {
     const emailInput = email; 
     const passwordInput = password;
     try {
-      const collectionRef = firestore()
-        .collection('User')
-        .where('email', '==', emailInput)
-        .where('password', '==', passwordInput);
-
+      const collectionRef = firestore().collection('User').where('email', '==', emailInput).where('password', '==', passwordInput);
       const snapshot = await collectionRef.get();
       const item = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
-
+  
       setData(item);
-      data.map(((items)=>setEmailname(items.username)))
-      // setEmailname()
+      setEmailname(item[0]?.username || ''); // Lưu tên người dùng vào context
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
@@ -130,7 +163,7 @@ const LoginScreen = ({
     console.log("emailname: ", emailname)
     console.log('ohahahaha: ', data)
 
-  }, [email]);
+  }, [email, password]);
   return (
     // <AppContext.Provider value={{ name, setName }}>
     <View style={styles.container}>

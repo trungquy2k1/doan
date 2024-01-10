@@ -8,18 +8,17 @@ import styles from './category.module.css';
 // import { db } from '../../../../firebase';
 import { storage, db } from '../../../firebase';
 // import { db,  } from '../../../firebase';
-
 import config from '../../../configRoute';
-
 import Home from '../../Home/Home';
-
 import '../../admin/style/style.css';
+import TopContainer from '../../../component/Topcontainer/TopContainer';
 // import './category.css';
-import AddCategory from '../AddCategory/Addcategory';
+// import AddCategory from '../AddCategory/Addcategory';
 
 const Category = () => {
     const [idchon, setIdchon] = useState();
     const [imageUpload, setImageUpload] = useState();
+    // const [imageUploadLogo, setImageUploadLogo] = useState();
 
     const [category, setCategory] = useState([]);
     const [categoryData, setCategoryData] = useState([]);
@@ -29,6 +28,7 @@ const Category = () => {
     // const [stt, setStt] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+    const [imgLogo, setImgLogo] = useState('');
     const [cate, setCate] = useState('');
     const [catecu, setCatecu] = useState('');
 
@@ -67,13 +67,14 @@ const Category = () => {
         }
     };
 
-    const updatedUser = async (cateid) => {
-        const Update = doc(db, 'Category', cateid);
+    const updateCategory = async (cateid) => {
+        // const Update = doc(db, 'Category', cateid);
         // Set the "capital" field of the city 'DC'
         await updateDoc(doc(db, 'Category', cateid), {
             // capital: true,
             categoryname: cate,
             image: imageUrl,
+            imagelogo: imgLogo,
         });
         fetchCategory();
         setCate('');
@@ -95,6 +96,19 @@ const Category = () => {
     };
     console.log('day là link anh cate: ', imageUrl);
 
+    const uploadLogo = () => {
+        if (!imageUpload) return;
+
+        const imageRef = ref(storage, `images/Category/LogoCate/${imageUpload.name}`);
+
+        uploadBytes(imageRef, imageUpload).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((url) => {
+                console.log(url);
+                setImgLogo(url);
+                alert('Upload logo thành công');
+            });
+        });
+    };
     useEffect(() => {
         fetchCategory();
     }, []);
@@ -120,22 +134,28 @@ const Category = () => {
         <Home>
             {/* Giao diện màn hình user */}
             <div>
-                <div className="adminhead">
+                {/* <div className="adminhead">
                     <h2>Category</h2>
                     <div style={{ display: 'flex' }}>
                         <input placeholder="Search" value={searchKeyword} onChange={handleSearchKeyword} />
                         <button className="btnsearch" onClick={handleSearch}>
                             Search
                         </button>
-                    </div>
-                    {/* <button className="btnsearch" onClick={() => openModal()}>
+                    </div> */}
+                {/* <button className="btnsearch" onClick={() => openModal()}>
                         Thêm
                     </button>
                     <AddCategory isOpen={modalIsOpen} onRequestClose={closeModal} /> */}
-                    <NavLink to={config.routes.addcategory}>
+                {/* <NavLink to={config.routes.addcategory}>
                         <button className="btnsearch">Thêm</button>
                     </NavLink>
-                </div>
+                </div> */}
+                <TopContainer
+                    value={searchKeyword}
+                    onChange={handleSearchKeyword}
+                    onClick={handleSearch}
+                    to={config.routes.addcategory}
+                />
                 <div>
                     <div
                         style={{
@@ -208,7 +228,16 @@ const Category = () => {
                                                     onChange={(e) => setCate(e.target.value)}
                                                 />
                                             </div>
-
+                                            <h3>Logo</h3>
+                                            <div>
+                                                <input
+                                                    type="file"
+                                                    onChange={(event) => {
+                                                        setImageUpload(event.target.files[0]);
+                                                    }}
+                                                />
+                                                <button onClick={uploadLogo}>Upload</button>
+                                            </div>
                                             {/* <div>
                                                 <label>Tên người dùng cũ là: {selectedUsername} </label>
                                                 <input
@@ -218,6 +247,7 @@ const Category = () => {
                                                     onChange={(e) => setUsername(e.target.value)}
                                                 />
                                             </div>*/}
+                                            <h3>Ảnh đại diện</h3>
                                             <div>
                                                 <input
                                                     type="file"
@@ -236,7 +266,7 @@ const Category = () => {
                                                     onChange={(e) => setPassword(e.target.value)}
                                                 />
                                             </div>  */}
-                                            <button onClick={() => updatedUser(idchon)}>Lưu</button>
+                                            <button onClick={() => updateCategory(idchon)}>Lưu</button>
                                             {/* <button>Lưu</button> */}
                                         </Modal>
                                     </div>

@@ -5,6 +5,7 @@ import {DocumentData} from 'firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 
 import {styles} from './style';
+import ListCate from './Listcate/ListCate';
 interface FlatListItemProps {
   item: DocumentData;
   handleProductPress: (product: DocumentData) => void;
@@ -77,6 +78,10 @@ const HomeScr = () => {
     <View style={styles.homecontainer}>
       <Text style={styles.title}>BẠN MUỐN ĐẶT MÓN GÌ CHO HÔM NAY ???</Text>
       <View style={styles.homecontainer}>
+        <View>
+          <Text>danh mục các sản phẩm</Text>
+          <ListCate />
+        </View>
         <View>
           <Text style={{fontSize: 20, color: '#cc9900'}}>
             Sản phẩm đang được giảm giá

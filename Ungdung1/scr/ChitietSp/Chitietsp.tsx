@@ -38,9 +38,8 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
   const [selectedFavories, setSelectedFavories] = useState(!product.favories);
   const [refreshingComment, setRefreshingComment] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [clickLike, setClickLike] = useState(false)
-  const [numberLike, setNumberLike] = useState(0)
-
+  const [clickLike, setClickLike] = useState(false);
+  const [numberLike, setNumberLike] = useState(0);
 
   const decreaseQuantity = () => {
     if (quantity > 1) {
@@ -85,11 +84,11 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
     const items = snapshot.docs.map(doc => ({
       ...doc.data(),
       id: doc.id,
-      // hasLiked: false, 
+      // hasLiked: false,
     }));
-    {comments.map(((cm)=>(
-      setUserlike(cm.usernamelike)
-    )))}
+    {
+      comments.map(cm => setUserlike(cm.usernamelike));
+    }
     setComments(items);
   };
   const deleteComments = async (commentKey: string) => {
@@ -128,34 +127,35 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
     fetchComment().then(() => setRefreshingComment(false));
   };
   // them vao so thich
-  // const addFavorite = async () => {
-  //   // const totalPrice = product.price * quantity;
-  //   const querySnapshot = await firestore()
-  //     .collection('Favorites')
-  //     .where('name', '==', product.name)
-  //     .get();
+  const addFavorite = async () => {
+    // const totalPrice = product.price * quantity;
+    const querySnapshot = await firestore()
+      .collection('Favorites')
+      .where('name', '==', product.name)
+      .get();
 
-  //   if (querySnapshot.empty) {
-  //     // Tạo tài liệu mới nếu không tìm thấy sản phẩm
-  //     const favoriteItem = {
-  //       name: product.name,
-  //       image: product.image,
-  //       price: product.price,
-  //       description: product.description,
-  //       category: product.category,
-  //       giamgia: product.giamgia,
-  //     };
-  //     try {
-  //       await firestore().collection('Favorites').add(favoriteItem);
-  //       // Alert.alert('Thêm thành công vào sở thích của bạn')
-  //       Alert.alert('Thêm thành công vào sở thích của bạn');
-  //     } catch (error) {
-  //       console.log('Lỗi khi thêm sản phẩm :', error);
-  //     }
-  //   } else {
-  //     Alert.alert('Sản phẩm đã có trong sở thích của bạn');
-  //   }
-  // };
+    if (querySnapshot.empty) {
+      // Tạo tài liệu mới nếu không tìm thấy sản phẩm
+      const favoriteItem = {
+        name: product.name,
+        image: product.image,
+        price: product.price,
+        description: product.description,
+        category: product.category,
+        giamgia: product.giamgia,
+        user: emailname,
+      };
+      try {
+        await firestore().collection('Favorites').add(favoriteItem);
+        // Alert.alert('Thêm thành công vào sở thích của bạn')
+        Alert.alert('Thêm thành công vào sở thích của bạn');
+      } catch (error) {
+        console.log('Lỗi khi thêm sản phẩm :', error);
+      }
+    } else {
+      Alert.alert('Sản phẩm đã có trong sở thích của bạn');
+    }
+  };
   // const handleUpdate = () => {
   //   // setSelectedFavories(!product.favories)
   //   setSelectedFavories(!product.favories);
@@ -165,30 +165,30 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
 
   //   console.log('favories: lllllllllll');
   // };
-  const UpdateFavories = () => {
-    // setIsFavorite(!isFavorite);
-    setSelectedFavories(!selectedFavories);
-    firestore()
-      .collection('Product')
-      .doc(product.key)
-      .update({
-        // age: 31,
-        favories: !selectedFavories,
-      })
-      .then(() => {
-        console.log('Favories updated!');
-        // fetchUpdate;
-        
-        // setSelectedFavories(!product.favories);
-        console.log('favories: ', product.favories);
-      })
-      .catch(error => {
-        console.error('Lỗi khi cập nhật dữ liệu:', error);
-      });
+  // const UpdateFavories = () => {
+  //   // setIsFavorite(!isFavorite);
+  //   setSelectedFavories(!selectedFavories);
+  //   firestore()
+  //     .collection('Product')
+  //     .doc(product.key)
+  //     .update({
+  //       // age: 31,
+  //       favories: !selectedFavories,
+  //     })
+  //     .then(() => {
+  //       console.log('Favories updated!');
+  //       // fetchUpdate;
 
-    // setSelectedFavories(!selectedFavories)
-    // console.log('favories: ', product.favories)
-  };
+  //       // setSelectedFavories(!product.favories);
+  //       console.log('favories: ', product.favories);
+  //     })
+  //     .catch(error => {
+  //       console.error('Lỗi khi cập nhật dữ liệu:', error);
+  //     });
+
+  //   // setSelectedFavories(!selectedFavories)
+  //   // console.log('favories: ', product.favories)
+  // };
   //them vao gio hang
   const addToCart = async () => {
     const querySnapshot = await firestore()
@@ -233,16 +233,19 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
   //   }
   //   setClickLike(!clickLike)
   // }
-  const handleLikeComment = async (commentID) => {
+  const handleLikeComment = async commentID => {
     try {
-      const commentRef = await firestore().collection('comments').where('usernamelike', '==', emailname).get();
+      const commentRef = await firestore()
+        .collection('comments')
+        .where('usernamelike', '==', emailname)
+        .get();
       // const items = commentRef.docs.map(doc => ({
       //   ...doc.data(),
       //   id: doc.id,
       //   userlike: doc.data().usernamelike,
-      //   // hasLiked: false, 
+      //   // hasLiked: false,
       // }));
-      if(commentRef.empty){
+      if (commentRef.empty) {
         //   commentRef.update({
         //   // usernamelike: emailname,
         //   likes: !clickLike
@@ -250,25 +253,27 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
         // const updatedLike = existingLike.likes + 1;
         // await docRef.update({
         //   likes: updatedLike,
-          
+
         //   // price: updatedPrice,
         // });
         // const commentlike = {
         //   likes: numberLike+1
         // };
         // const docRef = commentRef.docs[0].ref;
-      // const existingLike = commentRef.docs[0].data();
+        // const existingLike = commentRef.docs[0].data();
         // const updatedLike = [...existingLike.usernamelike, emailname]
-        await firestore().collection('comment').doc(commentID).update({
-          likes: numberLike+1,
-          // usernamelike: [...uselike, emailname]
-        });
-          Alert.alert('Like Okokok');
-      }
-      else{
+        await firestore()
+          .collection('comment')
+          .doc(commentID)
+          .update({
+            likes: numberLike + 1,
+            // usernamelike: [...uselike, emailname]
+          });
+        Alert.alert('Like Okokok');
+      } else {
         const docRef = commentRef.docs[0].ref;
-      const existingLike = commentRef.docs[0].data();
-        
+        const existingLike = commentRef.docs[0].data();
+
         const updatedLike = existingLike.likes - 1;
         await docRef.update({
           likes: updatedLike,
@@ -276,23 +281,25 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
         });
         Alert.alert('Bỏ like');
       }
-      
-      
-      
+
       // setClickLike(!clickLike)
-    } catch (error){
-        console.log(error);
-      }
-    };
-    const handleClick = () =>{
-      navigation.navigate('Cart')
+    } catch (error) {
+      console.log(error);
     }
-  
+  };
+  const handleClick = () => {
+    navigation.navigate('Cart');
+  };
+
   return (
     <View style={styles.container}>
-      <Header2 navigation={navigation}
-      source={require('../../scr/Image/Category/cart.png')}
-      trangcon='Cart' nd={undefined}  onPress={handleClick}    />
+      <Header2
+        navigation={navigation}
+        source={require('../../scr/Image/Category/cart.png')}
+        trangcon="Cart"
+        nd={undefined}
+        onPress={handleClick}
+      />
       {/* <Image source={{ uri: product.image }} style={{ width: 200, height: 200 }} /> */}
       <View style={styles.img}>
         <ImageBackground
@@ -444,7 +451,7 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
             <TouchableOpacity
               style={styles.tim}
               // onPress={() => UpdateFavories(product.key)}>
-              onPress={UpdateFavories}>
+              onPress={addFavorite}>
               <Image
                 source={require('../Image/Icon/heart.png')}
                 style={styles.imgtim}
@@ -470,7 +477,7 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
               />
             )}
           /> */}
-          <CommentScreen fetchComment={fetchComment()}/>
+          <CommentScreen fetchComment={fetchComment()} />
           <ScrollView
             refreshControl={
               <RefreshControl
@@ -487,20 +494,19 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
                 />
                 <View>
                   <View style={styles.noidung}>
-                  <View>
-                    
-                    {cm.username == '' ? (
-                      <Text style={styles.name}>Người dùng</Text>
-                    ) : (
-                      
-                      <Text style={styles.name}> {cm.username} </Text>
-                    )}
+                    <View>
+                      {cm.username == '' ? (
+                        <Text style={styles.name}>Người dùng</Text>
+                      ) : (
+                        <Text style={styles.name}> {cm.username} </Text>
+                      )}
 
-                    <Text style={[styles.name, {fontSize: 14, color: 'grey'}]}>
-                      {moment(cm.timestamp.toDate()).format('DD/MM/YYYY')}
-                    </Text>
+                      <Text
+                        style={[styles.name, {fontSize: 14, color: 'grey'}]}>
+                        {moment(cm.timestamp.toDate()).format('DD/MM/YYYY')}
+                      </Text>
                     </View>
-                    
+
                     {/* <DeletedComment id={cm.key} productkey={product.key}/> */}
                     <TouchableOpacity
                       onPress={() =>
@@ -525,22 +531,21 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
                   </View>
                   {/* Nội dung comment */}
                   <Text style={styles.content}> {cm.content} </Text>
-                  <View style={{flexDirection:'row', marginTop: 5}}>
-                  <TouchableOpacity onPress={() =>handleLikeComment(cm.key)}>
-                  {/* <TouchableOpacity onPress={handleLikeComment}> */}
+                  <View style={{flexDirection: 'row', marginTop: 5}}>
+                    <TouchableOpacity onPress={() => handleLikeComment(cm.key)}>
+                      {/* <TouchableOpacity onPress={handleLikeComment}> */}
 
-                  {!clickLike  ? (
-                      <Image 
-                      source={require('../Image/Icon/like.png')}
-                      style={{width: 25, height: 25, marginRight: 5}}
-                    />
-                  ):(
-                  <Image 
-                      source={require('../Image/Icon/like2.png')}
-                      style={{width: 25, height: 25, marginRight: 5}}
-                    />
-                  )}
-                    
+                      {!clickLike ? (
+                        <Image
+                          source={require('../Image/Icon/like.png')}
+                          style={{width: 25, height: 25, marginRight: 5}}
+                        />
+                      ) : (
+                        <Image
+                          source={require('../Image/Icon/like2.png')}
+                          style={{width: 25, height: 25, marginRight: 5}}
+                        />
+                      )}
                     </TouchableOpacity>
                     {/* <Text style={{fontSize: 18}}> {numberLike} </Text> */}
                     <Text style={{fontSize: 18}}> {cm.likes} </Text>
@@ -548,10 +553,8 @@ const ChitietSP = ({route, fetchUpdate}: any) => {
                     {cm.usernamelike == '' ? (
                       <Text style={styles.name}>Người dùng</Text>
                     ) : (
-                      
                       <Text style={styles.name}> {cm.usernamelike} </Text>
                     )}
-
                   </View>
                 </View>
               </View>

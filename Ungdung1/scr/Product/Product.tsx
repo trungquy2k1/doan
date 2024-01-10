@@ -220,6 +220,7 @@ import {
   ActivityIndicator,
   Image,
   TextInput,
+  Alert,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { DocumentData } from 'firebase/firestore';
@@ -238,19 +239,25 @@ const ProductListScreen = ( {route}: any ) => {
   // const [lastDocId, setLastDocId] = useState(null);
   const [lastDocId, setLastDocId] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
+  const[catenamem, setCatename] = useState(categoryname)
+
 
   // const fetchData = async () => {
   //   try {
   //     setLoading(true);
-
+  
   //     const snapshot = await firestore()
   //       .collection('Product')
   //       .where('category', '==', categoryname)
   //       .orderBy(firestore.FieldPath.documentId())
   //       .limit(8)
   //       .get();
-
-  //     const items = snapshot.docs.map((doc) => doc.data());
+  
+  //     const items = snapshot.docs.map((doc) => ({
+  //       ...doc.data(),
+  //       key: doc.id,
+  //     }));
+  
   //     setProducts(items);
   //     setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
   //     setHasMore(items.length >= 8);
@@ -260,70 +267,30 @@ const ProductListScreen = ( {route}: any ) => {
   //     setLoading(false);
   //   }
   // };
-
-  // const fetchData = async () => {
-  //   try {
-  //     setLoading(true);
-
-  //     const snapshot = await firestore()
-  //       .collection('Product')
-  //       .where('category', '==', categoryname)
-  //       .orderBy(firestore.FieldPath.documentId())
-  //       .limit(8)
-        
-  //       .onSnapshot(querySnapshot => {
-  //         const product: React.SetStateAction<DocumentData[]> | { key: string; }[] = [];
-
-  //         querySnapshot.forEach(documentSnapshot => {
-  //           product.push({
-  //             ...documentSnapshot.data(),
-  //             key: documentSnapshot.id,
-  //           });
-  //         });
-
-  //         setProducts(product);
-  //         setLoading(false);
-  //       });
-  //       // console.log('product: ', JSON.stringify(products, null, 3))
-
-  //       // console.log('product: ', products)
-  //       // products.map((product, index)=>console.log('Product: ', product.key))
-  //     // const items = snapshot.docs.map((doc) => doc.data());
-  //     // setProducts(items);
-  //     // setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
-  //     // setHasMore(items.length >= 8);
-  //     if (querySnapshot.docs.length > 0) {
-  //       const items = querySnapshot.docs.map((doc) => doc.data());
-  //       setProducts(items);
-  //       setLastDocId(querySnapshot.docs[querySnapshot.docs.length - 1].id);
-  //       setHasMore(items.length >= 8);
-  //     }
-
-
-  //       return () => snapshot();
-  //     //   
-  //     //   .orderBy(firestore.FieldPath.documentId())
-  //     //   .limit(8)
-  //     //   .get();
-
-  //     // const items = snapshot.docs.map((doc) => doc.data());
-  //     // setProducts(items);
-  //     // setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
-  //     // setHasMore(items.length >= 8);
-  //   } catch (error) {
-  //     console.error('Error fetching products:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
+  const ktrcatename = () =>{
+    if(categoryname != ''){
+      setCatename(categoryname)
+    }
+    else{
+      console.log('chưa có catename')
+      
+    }
+  }
   const fetchData = async () => {
     try {
       setLoading(true);
-  
-      const snapshot = await firestore()
+      
+
+      if (catenamem == '') {
+        console.log('Vui lòng chọn một loại sản phẩm.');
+        Alert.alert('không có sản phẩm nào')
+        setLoading(false);
+        return;
+      }
+      else {
+        const snapshot = await firestore()
         .collection('Product')
-        .where('category', '==', categoryname)
+        .where('category', '==', catenamem)
         .orderBy(firestore.FieldPath.documentId())
         .limit(8)
         .get();
@@ -331,22 +298,31 @@ const ProductListScreen = ( {route}: any ) => {
       const items = snapshot.docs.map((doc) => ({
         ...doc.data(),
         key: doc.id,
-      }));
-  
+      }
+      
+      ));
       setProducts(items);
       setLastDocId(snapshot.docs[snapshot.docs.length - 1].id);
       setHasMore(items.length >= 8);
+      
+      }
+
+      // Rest of the fetchData function...
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
     }
   };
+  // console.log('kieu categoy: ', typeof categoryname)
 
 // const testproduct = products.map((product, index)=>console.log('Product: ', product.key))
   useEffect(() => {
+    ktrcatename()
     fetchData();
-    console.log('category:', categoryname);
+    // console.log('category:', categoryname);
+  console.log('cate name: ', catenamem)
+
   }, [categoryname]);
 
   const loadMoreData = async () => {
@@ -393,54 +369,54 @@ const ProductListScreen = ( {route}: any ) => {
       const filteredProducts = filterProducts(searchText);
 
   const renderProductItem = ({ item }) => (
-    // <TouchableOpacity>
-    //   <Text>{item.name}</Text>
-    // </TouchableOpacity>
+    <>
+      {item.category == '' ? (
+        <Text>Chưa có sản phẩm nào thuộc lại này</Text>
+      ):(
+        <View>
+        <TouchableOpacity
+         style={styles.productContainer}
+         onPress={() => handleProductPress(item)}>
+         <Image source={{uri: item.image}} style={styles.productImage} />
+         <View style={styles.productInfo}>
+           {item.giamgia != 0 && (
+             <View style={styles.giamgia}>
+               <Text style={[styles.gia, {color: 'red', fontSize: 18}]}>
+                 Sốt!!! Giảm đến
+               </Text>
+ 
+               <Text style={[styles.gia, {color: 'red', fontSize: 18}]}>
+                 {item.giamgia} %
+               </Text>
+             </View>
+           )}
+           <Text style={styles.productName}>{item.name}</Text>
+           {item.giamgia != 0 ? (
+             <View>
+               <View style={styles.hiengia}>
+                 <Text style={styles.gia}>Từ: </Text>
+                 <Text style={styles.gia}>{item.giagoc} đ</Text>
+               </View>
+               <View style={styles.hiengia}>
+                 <Text style={styles.gia}>Xuống còn: </Text>
+                 <Text style={styles.productPrice}>{item.price} đ</Text>
+               </View>
+             </View>
+           ):(
+             <View>
+             <Text style={[styles.productPrice , {fontSize: 22}]}>Giá: {item.price} đ</Text>
+             </View>
+           )}
+ 
+           
+         </View>
+       </TouchableOpacity>
+     </View>
+      )}
+    </>
+    
 
-
-    <View>
-       <TouchableOpacity
-        style={styles.productContainer}
-        onPress={() => handleProductPress(item)}>
-        <Image source={{uri: item.image}} style={styles.productImage} />
-        <View style={styles.productInfo}>
-          {/* <View style={styles.giamgia}>
-            <Text style={[styles.gia, {color: 'red', fontSize: 18}]}>Sốt!!! Giảm đến    </Text>
-            <Text style={[styles.gia, {color: 'red', fontSize: 18}]}>{item.giamgia} %</Text>
-          </View> */}
-          {item.giamgia != 0 && (
-            <View style={styles.giamgia}>
-              <Text style={[styles.gia, {color: 'red', fontSize: 18}]}>
-                Sốt!!! Giảm đến
-              </Text>
-
-              <Text style={[styles.gia, {color: 'red', fontSize: 18}]}>
-                {item.giamgia} %
-              </Text>
-            </View>
-          )}
-          <Text style={styles.productName}>{item.name}</Text>
-          {item.giamgia != 0 ? (
-            <View>
-              <View style={styles.hiengia}>
-                <Text style={styles.gia}>Từ: </Text>
-                <Text style={styles.gia}>{item.giagoc} đ</Text>
-              </View>
-              <View style={styles.hiengia}>
-                <Text style={styles.gia}>Xuống còn: </Text>
-                <Text style={styles.productPrice}>{item.price} đ</Text>
-              </View>
-            </View>
-          ):(
-            <View>
-            <Text style={[styles.productPrice , {fontSize: 22}]}>Giá: {item.price} đ</Text>
-            </View>
-          )}
-
-          
-        </View>
-      </TouchableOpacity>
-    </View>
+    
   );
 
   const renderLoadMoreButton = () => {

@@ -157,16 +157,25 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react
 import firestore from '@react-native-firebase/firestore';
 import {DocumentData} from 'firebase/firestore';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { MainStackParamList } from '../types/RootList';
 import styles from './style';
+// import { selectCategories, fetchCategories } from '../../redux/Reducer/categorySlice';
+import { getAllCategory } from '../../redux/Action/getAction';
 // const CategoryContext = createContext(null);
 const CategoryContext = createContext<(categoryname: any) => void>(() => {});
 
 const Category = ({navigation}:NativeStackScreenProps<MainStackParamList>) => {
   const [data, setData] = useState<DocumentData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   // const navigation = useNavigation();
+  const {cateList} = useSelector(state=> state.supply);
+  const dispatch = useDispatch();
 
+  // console.log('==================userBooks==================');
+  // console.log(JSON.stringify( cateList, null, 2));
+  // console.log('====================================');
   useEffect(() => {
     const fetchData = async () => {
       // Lấy dữ liệu từ Firestore
@@ -176,8 +185,14 @@ const Category = ({navigation}:NativeStackScreenProps<MainStackParamList>) => {
     };
 
     fetchData();
+    // dispatch(fetchCategories());
+    dispatch(getAllCategory())
   }, []);
-
+  useEffect(() => {
+    if (data.length > 0) {
+      setIsLoading(false);
+    }
+  }, [data]);
   const handleCategoryPress = (categoryname: any) => {
     navigation.navigate('ProductScreen', { categoryname: categoryname});
   };
@@ -207,13 +222,17 @@ const Category = ({navigation}:NativeStackScreenProps<MainStackParamList>) => {
 
   return (
     <View style={styles.container}>
+    {isLoading ? (
+        <Text>Loading...</Text>
+      ) : (
       <CategoryContext.Provider value={handleCategoryPress}>
         <FlatList
-          data={data}
+          data={cateList}
           renderItem={renderDataItem}
           keyExtractor={item => item.categoryname.toString()}
         />
       </CategoryContext.Provider>
+       )}
     </View>
   );
 };

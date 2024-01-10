@@ -28,23 +28,26 @@ import firestore from '@react-native-firebase/firestore';
 import {DocumentData, doc} from 'firebase/firestore';
 // import firebase from '../firebase/Firebase';
 // import Drawer from '../navigation/Drawer';
-import { AppContext } from '../../component/AppContext/AppContext';
+import {AppContext} from '../../component/AppContext/AppContext';
+import styles from './style';
 
 const Giohang = () => {
   const [products, setProducts] = useState<DocumentData[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isShow, setIsShow] = useState(false);
 
-const {emailname} = useContext(AppContext)
+  const {emailname} = useContext(AppContext);
   const navigation = useNavigation();
 
-   const featchData = async () => {
+  const featchData = async () => {
     try {
       const subscriber = firestore()
         .collection('Cart')
         .where('username', '==', emailname)
         .onSnapshot(querySnapshot => {
-          const cart: React.SetStateAction<DocumentData[]> | { key: string; }[] = [];
+          const cart: React.SetStateAction<DocumentData[]> | {key: string}[] =
+            [];
 
           querySnapshot.forEach(documentSnapshot => {
             cart.push({
@@ -64,6 +67,7 @@ const {emailname} = useContext(AppContext)
       setLoading(false);
     }
   };
+  // console.log(' so luong: ', products.length)
   useEffect(() => {
     // Lắng nghe các thay đổi đối với thông tin sản phẩm trong giỏ hàng
     featchData();
@@ -79,14 +83,14 @@ const {emailname} = useContext(AppContext)
       Alert.alert('Xóa thành công!');
       // console.log('Deleted product ID:', doc);
       featchData();
-      console.log('productId: ', productId)
+      console.log('productId: ', productId);
     } catch (error) {
       console.error('Error removing document: ', error);
     }
   };
   const totalAmount = products.reduce(
     (total, product) => total + product.price * product.quantity,
-    0
+    0,
   );
   // let formattedTotalAmount = totalAmount.toLocaleString('vi-VN', {
   //   style: 'currency',
@@ -99,74 +103,111 @@ const {emailname} = useContext(AppContext)
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.name,{ color: 'blue', fontSize: 24}]}>Giỏ hàng</Text>
-      <Text style={[styles.name, {fontSize: 18}]}>Các sản phẩm mà {emailname} đã chọn</Text>
-      {/* <Drawer tile="GIỎ HÀNG" /> */}
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-        }>
-        {products.map((product, index) => (
-          <View key={index} style={styles.product}>
-            <Image source={{uri: product.image}} style={styles.image} />
-            <View style={styles.info}>
-              <Text style={styles.name}>{product.name}</Text>
-              <Text style={styles.price}>{product.price.toLocaleString()} VNĐ</Text>
-              <Text style={styles.quantity}>x{product.quantity}</Text>
-              {/* <Text style={styles.quantity}>x{product.key}</Text> */}
-
-              <Text>______________________________________</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.delete}
-              // onPress={() => {
-              //   deleteProduct(product.key);
-              //   console.log('produc id', product.name);
-              // }}
-              onPress={() =>
-                Alert.alert('Bạn có chắc chắn muốn xóa', '', [
-                  {text: 'Cancel'},
-                  {
-                    text: 'OK',
-                    // onPress: () => navigation.navigate('Home'),
-                    onPress:() => {
-                        deleteProduct(product.key);
-                        console.log('produc id', product.name);
-                      },
-                    style: 'default',
-                  },
-                ])
-              }
-              >
-              <Image
-                source={require('../Image/Category/delete1.png')}
-                style={{
-                  width: 50,
-                  height: 50,
-                  backgroundColor: '#fff',
-                  borderRadius: 28,
-                }}
-              />
-              <Text style={{color: '#fff', fontSize: 16}}>Xóa</Text>
-              {/* console.console.log('id: ', product.id); */}
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
-      <View style={styles.total}>
-        <Text style={styles.totalText}>Tổng tiền: </Text>
-        {/* <Text style={styles.totalText}>
-          {products.reduce(
-            (total, product) => total + product.price * product.quantity,
-            0,
-          )}{' '}
-          VNĐ
-        </Text> */}
+      <Text style={[styles.name, {color: 'blue', fontSize: 24, marginBottom: 10}]}>Giỏ hàng</Text>
+      {/* <Text style={[styles.name, {fontSize: 18}]}>
+        Các sản phẩm mà {emailname} đã chọn
+      </Text> */}
+      <View style={styles.tongquan}>
+        <Text style={[styles.name, {fontSize: 18}]}>Bạn đã chọn {products.length} sản phẩm</Text>
         <Text style={styles.totalText}>
-          {formattedTotalAmount} VNĐ
+          Tổng tiền: {formattedTotalAmount} VNĐ
         </Text>
       </View>
-      <View style={styles.thanhtoan}>
+      {/* <View> */}
+        {!isShow ? (
+          <TouchableOpacity
+            onPress={() => setIsShow(true)}
+            style={styles.btnhien}>
+            <Text style={[styles.name, {fontSize: 18, color: '#fff'}]}>Hiển thị</Text>
+          </TouchableOpacity>
+        ) : (
+          // <View>
+
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            >
+              <View style={{justifyContent: 'center', alignItems:'center'}}>
+            <TouchableOpacity
+              onPress={() => setIsShow(false)}
+              style={styles.btnhien}>
+              <Text style={[styles.name, {fontSize: 18, color: '#fff'}]}>Ẩn</Text>
+            </TouchableOpacity>
+            </View>
+
+            {products.map((product, index) => (
+              <View key={index} style={styles.product}>
+                <Image source={{uri: product.image}} style={styles.image} />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{product.name}</Text>
+                  <Text style={styles.price}>
+                    {product.price.toLocaleString()} VNĐ
+                  </Text>
+                  <Text style={styles.quantity}>x{product.quantity}</Text>
+                  {/* <Text style={styles.quantity}>x{product.key}</Text> */}
+
+                  <Text>______________________________________</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.delete}
+                  // onPress={() => {
+                  //   deleteProduct(product.key);
+                  //   console.log('produc id', product.name);
+                  // }}
+                  onPress={() =>
+                    Alert.alert('Bạn có chắc chắn muốn xóa', '', [
+                      {text: 'Cancel'},
+                      {
+                        text: 'OK',
+                        // onPress: () => navigation.navigate('Home'),
+                        onPress: () => {
+                          deleteProduct(product.key);
+                          console.log('produc id', product.name);
+                        },
+                        style: 'default',
+                      },
+                    ])
+                  }>
+                  <Image
+                    source={require('../Image/Category/delete1.png')}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      backgroundColor: '#fff',
+                      borderRadius: 28,
+                    }}
+                  />
+                  <Text style={{color: '#fff', fontSize: 16}}>Xóa</Text>
+                  {/* console.console.log('id: ', product.id); */}
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+          // </View>
+        )}
+      {/* </View> */}
+
+      {/* <Drawer tile="GIỎ HÀNG" /> */}
+
+      {/* <View style={styles.total}>
+        <Text style={styles.totalText}>Tổng tiền: </Text>
+        <Text style={styles.totalText}>{formattedTotalAmount} VNĐ</Text>
+      </View> */}
+
+      {formattedTotalAmount === '0' ? (
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <Text style={styles.totalText}>Bạn hãy lựa chọn sản phẩm trước</Text>
+        <TouchableOpacity style={[styles.thanhtoan,{width: 160, height: 40}]} onPress={()=>navigation.navigate('Category')}>
+        <Text style={styles.totalText}>Đi Tới</Text>
+
+        </TouchableOpacity>
+        </View>
+      ):(
+        <View style={styles.thanhtoan}>
         <TouchableOpacity
           // onPress={() =>
           //   Alert.alert('Thanh toán thành công', 'Cảm ơn bạn đã đặt hàng', [
@@ -179,75 +220,16 @@ const {emailname} = useContext(AppContext)
           //   ])
           // }
           // onPress={()=>navigation.navigate('Payment')}
-          onPress={()=>navigation.navigate('Payment', { formattedTotalAmount })}
-          >
+          onPress={() =>
+            navigation.navigate('Payment', {formattedTotalAmount})
+          }>
           <Text style={styles.totalText}>Thanh Toán</Text>
         </TouchableOpacity>
       </View>
+      )}
+      
     </View>
   );
 };
 
 export default Giohang;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  product: {
-    flexDirection: 'row',
-    marginVertical: 10,
-    width: '63%',
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 5,
-  },
-  info: {
-    marginLeft: 10,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ff9966',
-  },
-  price: {
-    fontSize: 18,
-  },
-  quantity: {
-    fontSize: 18,
-  },
-  total: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  totalText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  thanhtoan: {
-    backgroundColor: '#ffff4d',
-    width: '50%',
-    height: 40,
-    marginVertical: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-  },
-  delete: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ff9966',
-    marginRight: 10,
-    width: 55,
-    height: 69,
-    paddingTop: 3,
-    borderRadius: 14,
-  },
-});
-

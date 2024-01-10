@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import Modal from 'react-modal';
 
 import { db, storage } from '../../../../firebase';
 // import config from '../../../../configRoute';
@@ -10,8 +11,9 @@ import config from '../../../../configRoute';
 import Home from '../../../Home/Home';
 import '../../style/style.css';
 import stylepro from './product.module.css';
-import Modal from 'react-modal';
-import AddProduct from '../Addproduct/Addproduct';
+import TopContainer from '../../../../component/Topcontainer/TopContainer';
+
+// import AddProduct from '../Addproduct/Addproduct';
 // import './product.css';
 const Product = () => {
     const [idchon, setIdchon] = useState();
@@ -171,7 +173,7 @@ const Product = () => {
         <Home>
             {/* Giao diện màn hình user */}
             <div>
-                <div className="adminhead">
+                {/* <div className="adminhead">
                     <h2>Product</h2>
                     <div style={{ display: 'flex' }}>
                         <input placeholder="Search" value={searchKeyword} onChange={handleSearchKeyword} />
@@ -182,12 +184,19 @@ const Product = () => {
                     <NavLink to={config.routes.addproduct}>
                         <button className="btnsearch">Thêm</button>
                     </NavLink>
-                    {/* <button className="btnsearch" onClick={() => openModal()}>
+                </div> */}
+                {/* <button className="btnsearch" onClick={() => openModal()}>
                         Thêm
                     </button> */}
-                    {/* <AddUser /> */}
-                    {/* <AddProduct isOpen={modalIsOpen} onRequestClose={closeModal} /> */}
-                </div>
+                {/* <AddUser /> */}
+                {/* <AddProduct isOpen={modalIsOpen} onRequestClose={closeModal} /> */}
+
+                <TopContainer
+                    value={searchKeyword}
+                    onChange={handleSearchKeyword}
+                    onClick={handleSearch}
+                    to={config.routes.addproduct}
+                />
                 <div>
                     <div
                         style={{

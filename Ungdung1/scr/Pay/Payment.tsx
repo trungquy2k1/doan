@@ -10,7 +10,14 @@
 // export default Payment
 
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, TextInput, Alert, TouchableOpacity, ImageBackground} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+  ImageBackground,
+} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -21,11 +28,15 @@ import MyButton from '../../component/Button/Mybutton';
 // import {FlatList} from 'react-native-gesture-handler';
 import {AppContext} from '../../component/AppContext/AppContext';
 import Header2 from '../../component/Head/Header';
+import {DocumentData, doc} from 'firebase/firestore';
+import PaymentCard from '../../component/PaymentCart/PaymentCart';
 
 const Payment = ({route}: any) => {
   const {formattedTotalAmount} = route.params;
   const navigation = useNavigation();
   const {emailname} = useContext(AppContext);
+
+  const [dataOrder, setDataOrder] = useState<DocumentData[]>([]);
 
   const [isPress, setIsPress] = useState(false);
   const [edit, setEdit] = useState(true);
@@ -35,7 +46,7 @@ const Payment = ({route}: any) => {
   const [name, setName] = useState('');
   const [sdt, setSdt] = useState('');
   const [diachi, setDiachi] = useState('');
-  const [sodon, setSodon] = useState(0);
+  // const [sodon, setSodon] = useState(0);
 
   const [checkboxes, setCheckboxes] = useState([
     {
@@ -50,7 +61,7 @@ const Payment = ({route}: any) => {
     },
   ]);
 
-  const onButtonPress = () => {
+  const onButtonPress = async () => {
     const selectedCheckBoxes = checkboxes.find(cb => cb.checked === true);
     if (name == '' || sdt == '' || diachi == '') {
       Alert.alert('Vui lồng điền đầy đủ thông tin');
@@ -72,7 +83,7 @@ const Payment = ({route}: any) => {
   const handleXacnhan = () => {
     // setXacnhan(!xacnhan);
     setIsPress(!isPress);
-    setSodon(pre => pre + 1);
+    // setSodon(pre => pre + 1);
     setHienthitien(!hienthitien);
     setEdit(true);
     // na
@@ -80,15 +91,17 @@ const Payment = ({route}: any) => {
 
   const addOrder = async () => {
     try {
-      await firestore().collection('Order').add({
-        tennguoinhan: name,
-        sodienthoai: sdt,
-        diachi: diachi,
-        username: emailname,
-        ngaydat: firestore.Timestamp.fromDate(new Date()),
-        state: 'Đang giao hàng',
-        tongtien: formattedTotalAmount,
-      });
+      await firestore()
+        .collection('Order')
+        .add({
+          tennguoinhan: name,
+          sodienthoai: sdt,
+          diachi: diachi,
+          username: emailname,
+          ngaydat: firestore.Timestamp.fromDate(new Date()),
+          state: 'Đang giao hàng',
+          tongtien: formattedTotalAmount,
+        });
 
       setIsPress(!isPress);
       setHienthitien(!hienthitien);
@@ -96,6 +109,7 @@ const Payment = ({route}: any) => {
       setName('');
       setSdt('');
       setDiachi('');
+      handleDeleteData();
       Alert.alert('thêm thành công');
     } catch (error) {
       console.log('Lỗi: ', error);
@@ -105,19 +119,61 @@ const Payment = ({route}: any) => {
     const querySnapshot = await firestore()
       .collection('Order')
       .where('username', '==', emailname)
+      .where('state', '==', 'Đang giao hàng')
       .get();
-    
-      setSodon(pre => pre + 1);
-    
+
+    const items = querySnapshot.docs.map(doc => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    setDataOrder(items);
+
+    // setSodon(pre => pre + 1);
   };
 
-  useEffect(()=>{
-    FetchOrder()
-  },[])
+  useEffect(() => {
+    FetchOrder();
+  }, []);
 
-  const handleClick = () =>{
+  const handleClick = () => {
     navigation.navigate('ListOrder');
-  }
+  };
+
+  const handleDeleteData = async () => {
+    // Xác định bộ sưu tập và điều kiện
+    const collectionRef = firestore().collection('Cart');
+    const query = collectionRef.where('username', '==', emailname);
+
+    try {
+      const snapshot = await query.get();
+      const batch = firestore().batch();
+
+      snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+
+      Alert.alert(
+        'Xác nhận',
+        'Bạn có chắc chắn muốn thanh toán?',
+        [
+          {
+            text: 'Hủy',
+            style: 'cancel',
+          },
+          {
+            text: 'Thanh toán',
+            onPress: async () => {
+              await batch.commit();
+              console.log('thành công!');
+            },
+          },
+        ],
+        {cancelable: false},
+      );
+    } catch (error) {
+      console.error('Lỗi xóa dữ liệu:', error);
+    }
+  };
   // const sendEmail = async (email: string, subject: string, body: string) => {
   //   try {
   //     // await auth().signInWithEmailAndPassword('YOUR_EMAIL', 'YOUR_PASSWORD');
@@ -170,7 +226,7 @@ const Payment = ({route}: any) => {
             alignItems: 'center',
           }}>
               {/* <Text style={styles.nd}>{nd}</Text> */}
-              {/* {sodon != 0 ? (
+      {/* {sodon != 0 ? (
           <Text>{sodon}</Text>
         ) : (
           <Text>0</Text>
@@ -178,19 +234,22 @@ const Payment = ({route}: any) => {
         </ImageBackground>
       </TouchableOpacity>
       <Text style={{width: 50}}></Text>
-    </View> */} 
+    </View> */}
       <Header2
         navigation={navigation}
         source={require('../../scr/Image/Icon/list.png')}
         trangcon="ListOrder"
-        nd={sodon != 0 ? (
-          // {sodon}
-          <Text>{sodon}</Text>
-        ) : (
-          // <Text>0</Text>
-          // 0
-          '0'
-        )} ht={false}  
+        nd={
+          dataOrder.length != 0 ? (
+            // {sodon}
+            <Text>{dataOrder.length}</Text>
+          ) : (
+            // <Text>0</Text>
+            // 0
+            '0'
+          )
+        }
+        ht={false}
         onPress={handleClick}
       />
       <Text
@@ -198,7 +257,7 @@ const Payment = ({route}: any) => {
           fontSize: 24,
           color: 'black',
           textAlign: 'center',
-          marginBottom: 10,
+          marginBottom: 5,
         }}>
         Thông tin người nhận
       </Text>
@@ -284,17 +343,38 @@ const Payment = ({route}: any) => {
             </Text>
           </View>
 
-          <View>
+          <View style={{marginBottom: 10}}>
             {checkboxes.map(cb => {
               if (cb.checked) {
                 return (
-                  <Text
-                    key={cb.id}
-                    style={[styles.txtthongtin, {marginBottom: 5, height: 80}]}>
-                    Thanh toán bằng: {cb.title}
-                  </Text>
+                  <View key={cb.id}>
+                    <Text
+                      // key={cb.id}
+                      style={[
+                        styles.txtthongtin,
+                        {height: 50},
+                      ]}>
+                      Thanh toán bằng: {cb.title}
+                    </Text>
+                    {cb.title == 'Thanh toán bằng tài khoản ngân hàng' && (
+                      <View key={cb.id}>
+                        <PaymentCard />
+                      </View>
+                    )}
+                  </View>
                 );
               }
+              if (cb.title == 'Thanh toán bằng tài khoản ngân hàng') {
+                <View key={cb.id}>
+                  <PaymentCard />
+                </View>;
+              }
+              // {cb.title=='Thanh toán bằng tài khoản ngân hàng' && (
+              //   <View key={cb.id}>
+              //   <PaymentCard />
+              //   </View>
+              // )}
+
               return null;
             })}
           </View>

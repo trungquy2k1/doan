@@ -2,9 +2,11 @@ import {SetStateAction, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createStackNavigator} from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import auth from '@react-native-firebase/auth';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Provider} from 'react-redux';
+import store from '../../redux/store';
 
 import {MainStackParamList} from '../types/RootList';
 import HomeScr from '../Home/HomeScr';
@@ -17,6 +19,7 @@ import BottomTabNavigation from './BottomTab';
 import Payment from '../Pay/Payment';
 import AppProvider from '../../component/AppContext/AppContext';
 import ListOrder from '../orderList/Listorder';
+import Category from '../Category/Category';
 const Navigation = () => {
   // const Stack = createNativeStackNavigator();
   const RootStack = createStackNavigator<MainStackParamList>();
@@ -38,37 +41,34 @@ const Navigation = () => {
     return null;
   }
   return (
-    <AppProvider>
-    <NavigationContainer >
-      {/* <Stack.Navigator initialRouteName="Home"> */}
-      {/* <RootStack.Navigator initialRouteName="Category"> */}
-
-      {/* {
-        user ? ( */}
-          <RootStack.Navigator initialRouteName="Login" screenOptions={{headerShown:false}}>
-            <RootStack.Screen name="BottomTabNavigation" component={BottomTabNavigation}  />
-            {/* <RootStack.Screen name='BottomTabBar' component={BottomTabBarr} /> */}
-            {/* <RootStack.Screen name="Category" component={Category} /> */}
-            {/* <RootStack.Screen name="Home" component={BottomTabNavigation} /> */}
-            <RootStack.Screen name="ProductScreen" component={ProductScreen} />
-            <RootStack.Screen name="ChitietSP" component={ChitietSP} />
-            <RootStack.Screen name="Payment" component={Payment} />
-            <RootStack.Screen name='ListOrder' component={ListOrder} />
-
-            {/* <RootStack.Screen name='Favories' component={Favories} /> */}
-            {/* <RootStack.Screen name='BottomTabBar' component={BottomTabNavigation} /> */}
-          {/* </RootStack.Navigator> */}
-        {/* ) : ( */}
-          {/* <RootStack.Navigator> */}
-            <RootStack.Screen name="Login" component={LoginScreen} />
-            <RootStack.Screen name="Register" component={Register} />
-
+    <Provider store={store}>
+      <AppProvider>
+        <NavigationContainer>
+          <RootStack.Navigator screenOptions={{headerShown: false}}>
+            {user ? (
+              <>
+                <RootStack.Screen
+                  name="BottomTabNavigation"
+                  component={BottomTabNavigation}
+                />
+                <RootStack.Screen
+                  name="ProductScreen"
+                  component={ProductScreen}
+                />
+                <RootStack.Screen name="ChitietSP" component={ChitietSP} />
+                <RootStack.Screen name="Payment" component={Payment} />
+                <RootStack.Screen name="ListOrder" component={ListOrder} />
+              </>
+            ) : (
+              <>
+                <RootStack.Screen name="Login" component={LoginScreen} />
+                <RootStack.Screen name="Register" component={Register} />
+              </>
+            )}
           </RootStack.Navigator>
-        {/* ) */}
-       {/* {/* <RootStack.Screen name="ChitietSP" component={ChitietSP} /> */}
-      {/* } */}
-    </NavigationContainer>
-    </AppProvider>
+        </NavigationContainer>
+      </AppProvider>
+    </Provider>
   );
 };
 export default Navigation;

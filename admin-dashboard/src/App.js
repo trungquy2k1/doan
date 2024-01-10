@@ -50,6 +50,7 @@ import AddProduct from './page/admin/product/Addproduct/Addproduct';
 import EditUser from './page/admin/user/UpdateUser/Updateuser';
 import Category from './page/Category/ViewCategory/Category';
 import AddCategory from './page/Category/AddCategory/Addcategory';
+import ListOrder from './page/ListOrder/OrderView/ListOrder';
 // import Register from './Screen/registerandlogin/Register/Register';
 
 const App = () => {
@@ -66,6 +67,7 @@ const App = () => {
             <Route path="addcategory" element={<AddCategory />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/edituser" element={<EditUser />} />
+            <Route path="/listorder" element={<ListOrder />} />
 
             {/* <Route path="/signup" element={<Register />} /> */}
         </Routes>
